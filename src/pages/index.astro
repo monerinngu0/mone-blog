@@ -1,0 +1,135 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const articles = (await getCollection('articles', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf())
+  .slice(0, 5);
+---
+
+<BaseLayout>
+  <section class="hero shell">
+    <p class="eyebrow">Deep dive into how things work.</p>
+    <h1>使える、から<br />なぜそうなるのか、へ。</h1>
+    <p class="intro">
+      C++やコンピュータ科学について、APIの使い方だけでなく、
+      内部構造・計算量・実装まで掘り下げます。
+    </p>
+  </section>
+
+  <section class="latest shell">
+    <div class="section-heading">
+      <h2>Latest Articles</h2>
+      <a href="/articles/">すべて見る →</a>
+    </div>
+
+    <div class="article-list">
+      {articles.map((article) => (
+        <a class="article-card" href={`/articles/${article.id}/`}>
+          <div>
+            <div class="topics">{article.data.topics.join(' · ')}</div>
+            <h3>{article.data.title}</h3>
+            <p>{article.data.description}</p>
+          </div>
+          <time datetime={article.data.publishedAt.toISOString()}>
+            {article.data.publishedAt.toLocaleDateString('ja-JP')}
+          </time>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding-top: 100px;
+    padding-bottom: 100px;
+  }
+
+  .eyebrow {
+    color: var(--accent);
+    font-weight: 650;
+  }
+
+  h1 {
+    max-width: 800px;
+    margin: 14px 0 24px;
+    font-size: clamp(2.7rem, 8vw, 5.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.055em;
+  }
+
+  .intro {
+    max-width: 660px;
+    color: var(--muted);
+    font-size: 1.1rem;
+  }
+
+  .latest {
+    padding-top: 20px;
+  }
+
+  .section-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .section-heading h2 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+
+  .section-heading a {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .article-card {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    padding: 26px 0;
+    border-bottom: 1px solid var(--line);
+    text-decoration: none;
+  }
+
+  .article-card h3 {
+    margin: 5px 0 7px;
+    font-size: 1.25rem;
+  }
+
+  .article-card p,
+  .article-card time,
+  .topics {
+    color: var(--muted);
+  }
+
+  .article-card p {
+    margin: 0;
+  }
+
+  .topics {
+    font-size: 0.8rem;
+  }
+
+  .article-card time {
+    flex: none;
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 640px) {
+    .hero {
+      padding-top: 64px;
+      padding-bottom: 64px;
+    }
+
+    .article-card {
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
+</style>

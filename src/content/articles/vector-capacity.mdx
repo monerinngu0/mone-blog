@@ -1,0 +1,43 @@
+---
+title: "std::vector の capacity とは何か"
+description: "size と capacity の違いから、動的配列がどのようにメモリを管理しているのかを見ていきます。"
+publishedAt: 2026-10-05
+topics:
+  - C++
+  - STL
+  - Memory
+prerequisites:
+  - "std::vector を使ったことがある"
+  - "配列の基本を知っている"
+---
+
+`std::vector` には、現在の要素数を返す `size()` と、確保済み領域の大きさを返す `capacity()` があります。
+
+## size と capacity
+
+次のコードで実際の変化を観察できます。
+
+```cpp
+#include <iostream>
+#include <vector>
+
+int main() {
+    std::vector<int> v;
+
+    for (int i = 0; i < 10; ++i) {
+        v.push_back(i);
+        std::cout << "size = " << v.size()
+                  << ", capacity = " << v.capacity() << '\n';
+    }
+}
+```
+
+`size()` は「いま何個の要素を持っているか」を表します。一方で `capacity()` は、再確保せずに保持できる要素数です。
+
+## なぜ余分に確保するのか
+
+もし `push_back()` のたびに必要な分だけメモリを確保し直すと、既存要素の移動が毎回必要になります。
+
+そこで `vector` は将来の追加に備えて余分な領域を確保します。この仕組みが、`push_back()` の**償却 O(1)**という計算量につながります。
+
+この「なぜ O(1) と言えるのか」は、別の記事で実際に導出します。
