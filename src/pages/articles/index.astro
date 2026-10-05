@@ -1,0 +1,80 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const articles = (await getCollection('articles', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+---
+
+<BaseLayout title="Articles" description="すべての記事">
+  <section class="shell page">
+    <header>
+      <p class="eyebrow">Articles</p>
+      <h1>すべての記事</h1>
+      <p>ひとつのテーマを、仕組みから深く掘り下げます。</p>
+    </header>
+
+    <div class="article-list">
+      {articles.map((article) => (
+        <a class="article-card" href={`/articles/${article.id}/`}>
+          <div class="meta">{article.data.topics.join(' · ')}</div>
+          <h2>{article.data.title}</h2>
+          <p>{article.data.description}</p>
+          <time datetime={article.data.publishedAt.toISOString()}>
+            {article.data.publishedAt.toLocaleDateString('ja-JP')}
+          </time>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page {
+    max-width: 900px;
+    padding-top: 72px;
+  }
+
+  header {
+    margin-bottom: 50px;
+  }
+
+  .eyebrow {
+    margin: 0 0 8px;
+    color: var(--accent);
+    font-weight: 650;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.3rem, 6vw, 4rem);
+    letter-spacing: -0.045em;
+  }
+
+  header > p:last-child {
+    color: var(--muted);
+  }
+
+  .article-card {
+    display: block;
+    padding: 28px 0;
+    border-top: 1px solid var(--line);
+    text-decoration: none;
+  }
+
+  .article-card h2 {
+    margin: 5px 0 7px;
+    font-size: 1.35rem;
+  }
+
+  .article-card p {
+    margin: 0 0 8px;
+    color: var(--muted);
+  }
+
+  .meta,
+  time {
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+</style>
