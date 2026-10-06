@@ -8,12 +8,12 @@ export async function getStaticPaths() {
 
   return articles.map((article) => ({
     params: { id: article.id },
-    props: { article, tutorials: tutorials.filter((tutorial) =>
+    props: { article, tutorial: tutorials.find((tutorial) =>
       tutorial.chapters.some(({ id }) => id === article.id)) },
   }));
 }
 
-const { article, tutorials } = Astro.props;
+const { article, tutorial } = Astro.props;
 const { Content } = await render(article);
 ---
 
@@ -23,9 +23,9 @@ const { Content } = await render(article);
   publishedAt={article.data.publishedAt}
   updatedAt={article.data.updatedAt}
   topics={article.topics}
-  prerequisites={article.data.prerequisites}
+  prerequisites={article.prerequisites}
   articleId={article.id}
-  tutorials={tutorials}
+  tutorial={tutorial}
 >
   <Content />
 </ArticleLayout>

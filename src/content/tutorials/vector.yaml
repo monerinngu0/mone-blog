@@ -1,5 +1,7 @@
 title: std::vectorを理解する
 description: vectorの基本から、size・capacityとメモリ確保の仕組みを学ぶシリーズ。
+prerequisites:
+  - text: C++の変数と配列の基本を知っている
 articles:
   - vector-introduction
   - vector-capacity

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Prerequisites from '../../components/Prerequisites.astro';
 import { getSiteContent } from '../../lib/content';
 export async function getStaticPaths() {
   const { tutorials } = await getSiteContent();
@@ -12,6 +13,7 @@ const { tutorial } = Astro.props;
     <a href="/tutorials/">すべてのTutorials</a>
     <h1>{tutorial.data.title}</h1>
     <p>{tutorial.data.description}</p>
+    <Prerequisites items={tutorial.prerequisites} />
     <p>{tutorial.chapters.length} 章</p>
     <a class="start" href={`/articles/${tutorial.chapters[0].id}/`}>第1章から読む →</a>
     <ol>

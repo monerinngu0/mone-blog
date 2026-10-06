@@ -3,7 +3,8 @@ import type { CollectionEntry } from 'astro:content';
 import TopicLinks from '../components/TopicLinks.astro';
 import BaseLayout from './BaseLayout.astro';
 import TutorialNav from '../components/TutorialNav.astro';
-import type { Tutorial } from '../lib/content';
+import type { Tutorial, Prerequisite } from '../lib/content';
+import Prerequisites from '../components/Prerequisites.astro';
 
 interface Props {
   title: string;
@@ -11,21 +12,21 @@ interface Props {
   publishedAt: Date;
   updatedAt?: Date;
   topics: CollectionEntry<'topics'>[];
-  prerequisites: string[];
+  prerequisites: Prerequisite[];
   articleId: string;
-  tutorials: Tutorial[];
+  tutorial?: Tutorial;
 }
 
-const { title, description, publishedAt, updatedAt, topics, prerequisites, articleId, tutorials } = Astro.props;
+const { title, description, publishedAt, updatedAt, topics, prerequisites, articleId, tutorial } = Astro.props;
 
 const formatDate = (date: Date) =>
   new Intl.DateTimeFormat('ja-JP', { dateStyle: 'long' }).format(date);
 ---
 
 <BaseLayout title={title} description={description}>
-  <div class:list={['reading shell', { 'with-tutorial': tutorials.length > 0 }]}>
-    {tutorials.length > 0 && <aside class="chapter-sidebar">
-      {tutorials.map((tutorial) => <TutorialNav tutorial={tutorial} articleId={articleId} />)}
+  <div class:list={['reading shell', { 'with-tutorial': !!tutorial }]}>
+    {tutorial && <aside class="chapter-sidebar">
+      <TutorialNav tutorial={tutorial} articleId={articleId} />
     </aside>}
   <article class="article">
     <header class="article-header">
@@ -37,20 +38,13 @@ const formatDate = (date: Date) =>
         {updatedAt && <span>更新: {formatDate(updatedAt)}</span>}
       </div>
 
-      {prerequisites.length > 0 && (
-        <aside class="prerequisites">
-          <strong>Prerequisites</strong>
-          <ul>
-            {prerequisites.map((item) => <li>{item}</li>)}
-          </ul>
-        </aside>
-      )}
+      <Prerequisites items={prerequisites} />
     </header>
 
     <div class="prose">
       <slot />
     </div>
-    {tutorials.map((tutorial) => <TutorialNav tutorial={tutorial} articleId={articleId} compact />)}
+    {tutorial && <TutorialNav tutorial={tutorial} articleId={articleId} compact />}
   </article>
   </div>
 </BaseLayout>
@@ -91,19 +85,6 @@ const formatDate = (date: Date) =>
     margin-top: 16px;
     color: var(--muted);
     font-size: 0.88rem;
-  }
-
-  .prerequisites {
-    margin-top: 28px;
-    padding: 18px 20px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: var(--surface);
-  }
-
-  .prerequisites ul {
-    margin: 8px 0 0;
-    padding-left: 1.3rem;
   }
 
   .prose :global(h2) {

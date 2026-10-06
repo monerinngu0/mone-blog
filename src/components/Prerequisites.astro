@@ -1,0 +1,16 @@
+---
+import type { Prerequisite } from '../lib/content';
+interface Props { items: Prerequisite[]; }
+const { items } = Astro.props;
+---
+{items.length > 0 && <aside class="prerequisites" aria-label="前提知識">
+  <strong>前提知識</strong>
+  <ul>
+    {items.map((item) => <li>{item.href ? <a href={item.href}>{item.text}</a> : item.text}</li>)}
+  </ul>
+</aside>}
+<style>
+  .prerequisites { margin-block: 28px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+  ul { margin: 8px 0 0; padding-left: 1.3rem; }
+  a { color: var(--accent); }
+</style>
