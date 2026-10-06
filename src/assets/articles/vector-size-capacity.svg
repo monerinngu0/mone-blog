@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 360" role="img" aria-labelledby="title desc">
+  <title id="title">vectorのsizeとcapacity</title>
+  <desc id="desc">8個分の領域のうち5個を使用し、残り3個が確保済みの空き領域である図</desc>
+  <rect width="960" height="360" rx="24" fill="#f8fafc"/>
+  <g font-family="system-ui, sans-serif" fill="#1d2939">
+    <text x="72" y="76" font-size="28" font-weight="700">std::vector&lt;int&gt;</text>
+    <text x="72" y="116" font-size="20" fill="#667085">size = 5 / capacity = 8</text>
+  </g>
+  <g transform="translate(72 152)">
+    <g fill="#dfe5ff" stroke="#39456f" stroke-width="3">
+      <rect width="96" height="96" rx="8"/><rect x="100" width="96" height="96" rx="8"/>
+      <rect x="200" width="96" height="96" rx="8"/><rect x="300" width="96" height="96" rx="8"/>
+      <rect x="400" width="96" height="96" rx="8"/>
+    </g>
+    <g fill="#fff" stroke="#98a2b3" stroke-width="3" stroke-dasharray="8 7">
+      <rect x="500" width="96" height="96" rx="8"/><rect x="600" width="96" height="96" rx="8"/>
+      <rect x="700" width="96" height="96" rx="8"/>
+    </g>
+    <g font-family="ui-monospace, monospace" font-size="28" text-anchor="middle" fill="#26335f">
+      <text x="48" y="60">10</text><text x="148" y="60">20</text><text x="248" y="60">30</text>
+      <text x="348" y="60">40</text><text x="448" y="60">50</text>
+    </g>
+  </g>
+  <g font-family="system-ui, sans-serif" font-size="18" text-anchor="middle">
+    <path d="M72 286v18h496v-18" fill="none" stroke="#39456f" stroke-width="3"/>
+    <text x="320" y="334" fill="#39456f" font-weight="700">使用中（size）</text>
+    <path d="M572 286v18h296v-18" fill="none" stroke="#667085" stroke-width="3"/>
+    <text x="720" y="334" fill="#667085" font-weight="700">確保済みの空き</text>
+  </g>
+</svg>

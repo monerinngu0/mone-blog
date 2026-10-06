@@ -1,5 +1,95 @@
 mone's blog generator
 
+## Articleの本文
+
+記事は `src/content/articles/<id>.mdx` に書きます。通常のMarkdownに加えて、数式・画像・インタラクティブグラフ・動画を利用できます。
+
+### LaTeX数式
+
+インライン数式は `$O(n)$`、別行の数式は `$$` で囲みます。KaTeXでビルド時にHTMLへ変換されるため、表示時のJavaScriptは不要です。
+
+```mdx
+計算量は $O(n)$ です。
+
+$$
+\sum_{i=0}^{k} 2^i = 2^{k+1} - 1
+$$
+```
+
+### 画像
+
+キャプションが必要な画像は `ArticleImage` を使います。画像は `src/assets/articles/` に置くと、Astroがサイズに合わせて最適化します。`alt` は必須です。
+
+```mdx
+import ArticleImage from '../../components/article/ArticleImage.astro';
+import diagram from '../../assets/articles/example.png';
+
+<ArticleImage
+  src={diagram}
+  alt="図の内容を説明する代替テキスト"
+  caption="本文を補足するキャプション"
+/>
+```
+
+キャプションが不要なら通常のMarkdown記法 `![代替テキスト](../../assets/articles/example.png)` も使えます。
+
+### JSXGraph
+
+グラフの処理は `src/graphs/` のJavaScriptモジュールに分けます。MDXには表示枠だけを書くため、長い処理が本文に混ざりません。同じページに複数置く場合は、それぞれ異なる `id` を指定します。
+
+```js
+// src/graphs/quadratic.js
+export default function setup(board) {
+  const a = board.create('slider', [[-4, -4], [1, -4], [-2, 1, 2]], {
+    name: 'a',
+  });
+  board.create('functiongraph', [(x) => a.Value() * x * x]);
+}
+```
+
+```mdx
+import JSXGraph from '../../components/article/JSXGraph.astro';
+import quadraticGraph from '../../graphs/quadratic.js?url';
+
+<JSXGraph
+  id="quadratic-graph"
+  module={quadraticGraph}
+  boundingBox={[-5, 5, 5, -5]}
+  caption="スライダーで係数 a を変更できます。"
+/>
+```
+
+初期化モジュールは `board` と第2引数の `JXG` を受け取れます。`height`、`axis`、`keepAspectRatio` も必要に応じて指定できます。
+
+### 動画
+
+YouTubeはプライバシー強化モードで埋め込みます。URL全体ではなく11文字の動画IDを指定します。
+
+```mdx
+import YouTube from '../../components/article/YouTube.astro';
+
+<YouTube
+  id="dQw4w9WgXcQ"
+  title="動画の内容を表すタイトル"
+  caption="動画の補足"
+/>
+```
+
+自分で配信する動画は `public/videos/` に置き、`Video` を使います。字幕がある場合はWebVTTファイルも指定できます。
+
+```mdx
+import Video from '../../components/article/Video.astro';
+
+<Video
+  src="/videos/example.mp4"
+  type="video/mp4"
+  title="操作例"
+  poster="/videos/example-poster.webp"
+  captions="/videos/example-ja.vtt"
+  caption="実際の操作手順"
+/>
+```
+
 ## Tutorials
 
 `src/content/tutorials/<id>.yaml` にシリーズを定義します。ファイル名は小文字英数字とハイフンで指定します。

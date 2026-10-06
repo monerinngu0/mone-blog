@@ -1,0 +1,136 @@
+---
+interface Props {
+  id: string;
+  module: string;
+  caption?: string;
+  height?: string;
+  boundingBox?: [number, number, number, number];
+  axis?: boolean;
+  keepAspectRatio?: boolean;
+}
+
+const {
+  id,
+  module,
+  caption,
+  height = '28rem',
+  boundingBox = [-5, 5, 5, -5],
+  axis = true,
+  keepAspectRatio = false,
+} = Astro.props;
+
+if (!/^[A-Za-z][A-Za-z0-9_-]*$/.test(id)) {
+  throw new Error(`JSXGraphのidには英数字・ハイフン・アンダースコアだけを使用してください: ${id}`);
+}
+
+const options = { boundingbox: boundingBox, axis, keepaspectratio: keepAspectRatio };
+---
+
+<figure class="interactive-figure">
+  <div
+    id={id}
+    class="jxgbox"
+    data-jsxgraph
+    data-module={module}
+    data-options={JSON.stringify(options)}
+    style={`height: ${height}`}
+    role="img"
+    aria-label={caption ?? 'インタラクティブなグラフ'}
+  ></div>
+  <p class="graph-error" data-graph-error hidden>グラフを読み込めませんでした。</p>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<script>
+  import JXG from 'jsxgraph';
+
+  async function initializeGraph(element: HTMLElement) {
+    if (element.dataset.initialized) return;
+    element.dataset.initialized = 'true';
+
+    try {
+      const options = JSON.parse(element.dataset.options ?? '{}');
+      const moduleUrl = element.dataset.module;
+      if (!moduleUrl) throw new Error('Graph module is missing.');
+
+      const board = JXG.JSXGraph.initBoard(element.id, {
+        ...options,
+        showCopyright: false,
+        showNavigation: true,
+      });
+      const graphModule = await import(/* @vite-ignore */ moduleUrl);
+      await graphModule.default(board, JXG);
+
+      const observer = new ResizeObserver(() => {
+        if (element.clientWidth > 0 && element.clientHeight > 0) {
+          board.resizeContainer(element.clientWidth, element.clientHeight, true);
+        }
+      });
+      observer.observe(element);
+    } catch (error) {
+      console.error(`JSXGraphの初期化に失敗しました: ${element.id}`, error);
+      element.closest('figure')?.querySelector<HTMLElement>('[data-graph-error]')?.removeAttribute('hidden');
+    }
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-jsxgraph]').forEach(initializeGraph);
+</script>
+
+<style is:global>
+  .jxgbox {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    touch-action: none;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+  }
+
+  .jxgbox svg text {
+    cursor: default;
+    user-select: none;
+  }
+
+  .JXGtext {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    font-family: Inter, "Noto Sans JP", system-ui, sans-serif;
+  }
+
+  .JXG_navigation {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    z-index: 10;
+    padding: 2px;
+    color: #667085;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .JXG_navigation_button:hover {
+    border-radius: 3px;
+    background: rgb(184 184 184 / 45%);
+  }
+</style>
+
+<style>
+  .interactive-figure {
+    margin: 2rem 0;
+  }
+
+  figcaption,
+  .graph-error {
+    margin: 0.65rem 0 0;
+    color: var(--muted);
+    font-size: 0.86rem;
+    line-height: 1.55;
+    text-align: center;
+  }
+
+  .graph-error {
+    color: #b42318;
+  }
+</style>
