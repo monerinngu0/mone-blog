@@ -1,0 +1,95 @@
+---
+import { z } from 'astro/zod';
+import data from '../../content/linked.json';
+
+const links = z.array(z.object({
+  name: z.string().trim().min(1),
+  url: z.string().url().refine((url) => ['https:', 'http:'].includes(new URL(url).protocol), {
+    message: 'Linked URLs must use https:// or http://',
+  }),
+}).strict()).parse(data);
+---
+
+<linked-menu>
+  <button type="button" class="linked-trigger" popovertarget="linked-menu-panel" aria-controls="linked-menu-panel" aria-expanded="false">
+    Linked <span class="chevron" aria-hidden="true">⌄</span>
+  </button>
+  <div id="linked-menu-panel" class="linked-panel" popover aria-label="関連リンク">
+    {links.length ? <ul>
+      {links.map((link) => <li><a href={link.url}>{link.name}<span aria-hidden="true">↗</span></a></li>)}
+    </ul> : <p>リンクはまだありません。</p>}
+  </div>
+</linked-menu>
+
+<script>
+  class LinkedMenu extends HTMLElement {
+    connectedCallback() {
+      const trigger = this.querySelector<HTMLButtonElement>('button')!;
+      const panel = this.querySelector<HTMLElement>('[popover]')!;
+      const position = () => {
+        const rect = trigger.getBoundingClientRect();
+        const width = panel.offsetWidth || Math.min(288, window.innerWidth - 32);
+        panel.style.left = `${Math.max(16, Math.min(rect.right - width, window.innerWidth - width - 16))}px`;
+        panel.style.top = `${Math.max(8, rect.bottom + 12)}px`;
+        panel.style.maxHeight = `${Math.max(0, window.innerHeight - Math.max(8, rect.bottom + 12) - 16)}px`;
+      };
+      panel.addEventListener('beforetoggle', (event) => {
+        trigger.setAttribute('aria-expanded', String(event.newState === 'open'));
+        if (event.newState === 'open') position();
+      });
+      panel.addEventListener('toggle', () => {
+        if (panel.matches(':popover-open')) {
+          position();
+          window.addEventListener('resize', position);
+          document.addEventListener('scroll', position, true);
+        } else {
+          window.removeEventListener('resize', position);
+          document.removeEventListener('scroll', position, true);
+        }
+      });
+      panel.addEventListener('click', (event) => {
+        if ((event.target as Element).closest('a')) panel.hidePopover();
+      });
+    }
+  }
+  if (!customElements.get('linked-menu')) customElements.define('linked-menu', LinkedMenu);
+</script>
+
+<style>
+  linked-menu { display: inline-flex; align-items: center; }
+  .linked-trigger {
+    display: inline-flex; align-items: center; gap: 5px; padding: 0;
+    border: 0; background: transparent; color: var(--muted);
+    font: inherit; font-size: 0.95rem; cursor: pointer;
+  }
+  .linked-trigger:hover, .linked-trigger[aria-expanded="true"] { color: var(--text); }
+  .chevron { transition: transform 160ms ease; }
+  .linked-trigger[aria-expanded="true"] .chevron { transform: rotate(180deg); }
+  .linked-panel {
+    position: fixed; inset: auto; margin: 0; width: min(18rem, calc(100vw - 32px));
+    padding: 8px; overflow-y: auto; overscroll-behavior: contain;
+    border: 1px solid var(--line); border-radius: 12px;
+    background: var(--surface); color: var(--text);
+    box-shadow: 0 12px 36px rgb(0 0 0 / 18%); transform-origin: top right;
+  }
+  .linked-panel:popover-open { animation: unfold 160ms ease-out; }
+  .linked-panel ul { list-style: none; margin: 0; padding: 0; }
+  .linked-panel a {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 12px; border-radius: 7px; font-size: 0.95rem; color: var(--text);
+    text-decoration: none; overflow-wrap: anywhere;
+  }
+  .linked-panel a:hover { background: var(--bg); color: var(--accent); }
+  .linked-panel p { margin: 8px 12px; color: var(--muted); font-size: 0.9rem; }
+  .linked-trigger:focus-visible, .linked-panel a:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 3px;
+  }
+  @keyframes unfold {
+    from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .linked-panel:popover-open { animation: none; }
+    .chevron { transition: none; }
+  }
+</style>

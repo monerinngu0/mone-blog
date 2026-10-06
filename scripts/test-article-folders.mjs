@@ -86,8 +86,10 @@ test('article IDs survive nesting and moves, and duplicate article folders fail'
     const about = await readFile(at('dist/about/index.html'), 'utf8');
     assert.match(about, /このブログについて/);
     assert.match(about, /<prose-content/);
-    const linked = await readFile(at('dist/linked/index.html'), 'utf8');
-    assert.match(linked, /href="https:\/\/github.com\/monerinngu0\/mone-blog"/);
+    assert.match(home, /popovertarget="linked-menu-panel"/);
+    assert.match(home, /href="https:\/\/github.com\/monerinngu0\/mone-blog"/);
+    assert.doesNotMatch(home, /href="\/linked\/"/);
+    assert.equal((await readdir(at('dist'))).includes('linked'), false);
   } finally {
     await rm(fixture, { recursive: true, force: true });
   }

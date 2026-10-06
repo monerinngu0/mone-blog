@@ -5,7 +5,7 @@ mone's blog generator
 - `/`（Home）は公開日が新しい記事を最大5件表示します。
 - `/articles/` はすべての公開記事を新しい順に表示します。
 - `/about/` の本文は `content/pages/about/index.mdx` で編集します。frontmatterは `title` と `description` だけです。見出し・数式・画像・コード・MDX部品を通常の記事と同じように使えます。Aboutは記事一覧やTutorialの章には含みません。
-- `/linked/` は `content/linked.json` の配列順にリンクを表示します。各項目には表示名 `name` とURL `url` だけを書きます。URLは `https://` または `http://` に対応します。
+- ナビゲーションの `Linked` ボタンを押すと、その下にリンク一覧が開きます。もう一度押す・外側を押す・Escで閉じられます。独立したページは作りません。`content/linked.json` の配列順に表示し、各項目には表示名 `name` とURL `url` だけを書きます。URLは `https://` または `http://` に対応します。
 
 ```json
 [
