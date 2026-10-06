@@ -1,10 +1,10 @@
 ---
-import { getCollection } from 'astro:content';
+import { getSiteContent } from '../lib/content';
+import TopicLinks from '../components/TopicLinks.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const articles = (await getCollection('articles', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf())
-  .slice(0, 5);
+const { articles: allArticles } = await getSiteContent();
+const articles = allArticles.slice(0, 5);
 ---
 
 <BaseLayout>
@@ -25,16 +25,16 @@ const articles = (await getCollection('articles', ({ data }) => !data.draft))
 
     <div class="article-list">
       {articles.map((article) => (
-        <a class="article-card" href={`/articles/${article.id}/`}>
+        <article class="article-card">
           <div>
-            <div class="topics">{article.data.topics.join(' · ')}</div>
-            <h3>{article.data.title}</h3>
+            <TopicLinks topics={article.topics} />
+            <h3><a href={`/articles/${article.id}/`}>{article.data.title}</a></h3>
             <p>{article.data.description}</p>
           </div>
           <time datetime={article.data.publishedAt.toISOString()}>
             {article.data.publishedAt.toLocaleDateString('ja-JP')}
           </time>
-        </a>
+        </article>
       ))}
     </div>
   </section>

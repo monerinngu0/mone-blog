@@ -1,4 +1,6 @@
 ---
+import type { CollectionEntry } from 'astro:content';
+import TopicLinks from '../components/TopicLinks.astro';
 import BaseLayout from './BaseLayout.astro';
 
 interface Props {
@@ -6,7 +8,7 @@ interface Props {
   description: string;
   publishedAt: Date;
   updatedAt?: Date;
-  topics: string[];
+  topics: CollectionEntry<'topics'>[];
   prerequisites: string[];
 }
 
@@ -19,9 +21,7 @@ const formatDate = (date: Date) =>
 <BaseLayout title={title} description={description}>
   <article class="article shell">
     <header class="article-header">
-      <div class="topics">
-        {topics.map((topic) => <span>{topic}</span>)}
-      </div>
+      <TopicLinks topics={topics} />
       <h1>{title}</h1>
       <p class="lead">{description}</p>
       <div class="dates">
@@ -53,21 +53,6 @@ const formatDate = (date: Date) =>
 
   .article-header {
     margin-bottom: 52px;
-  }
-
-  .topics {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 18px;
-  }
-
-  .topics span {
-    padding: 3px 9px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    color: var(--muted);
-    font-size: 0.82rem;
   }
 
   h1 {

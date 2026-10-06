@@ -3,17 +3,29 @@ import { getSiteContent } from '../../lib/content';
 import TopicLinks from '../../components/TopicLinks.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const { articles } = await getSiteContent();
+export async function getStaticPaths() {
+  const { articles, topics } = await getSiteContent();
+  return topics.map((topic) => ({
+    params: { id: topic.id },
+    props: {
+      topic,
+      articles: articles.filter((article) => article.topics.some(({ id }) => id === topic.id)),
+    },
+  }));
+}
+const { topic, articles } = Astro.props;
 ---
 
-<BaseLayout title="Articles" description="すべての記事">
+<BaseLayout title={topic.data.name} description={topic.data.description}>
   <section class="shell page">
     <header>
-      <p class="eyebrow">Articles</p>
-      <h1>すべての記事</h1>
-      <p>ひとつのテーマを、仕組みから深く掘り下げます。</p>
+      <p class="eyebrow"><a href="/topics/">すべてのTopics</a></p>
+      <h1>{topic.data.name}</h1>
+      <p>{topic.data.description}</p>
+      <p>{articles.length} 記事</p>
     </header>
 
+    {articles.length === 0 && <p>このTopicの公開記事はまだありません。</p>}
     <div class="article-list">
       {articles.map((article) => (
         <article class="article-card">
