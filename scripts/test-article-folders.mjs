@@ -66,7 +66,28 @@ test('article IDs survive nesting and moves, and duplicate article folders fail'
     await writeFile(join(duplicate, 'index.mdx'), body.replace('---\n', '---\ndraft: true\n'));
     expectDuplicate();
     await rm(duplicate, { recursive: true });
+
+    // Home limits public articles to five; the archive keeps every article.
+    for (let i = 1; i <= 6; i++) {
+      const folder = article(`latest-${i}`);
+      await mkdir(folder);
+      await writeFile(join(folder, 'index.mdx'), `---\ntitle: Latest ${i}\ndescription: Fixture\npublishedAt: 2027-01-0${i}\n---\nBody\n`);
+    }
+    await mkdir(article('hidden-draft'));
+    await writeFile(article('hidden-draft/index.mdx'), '---\ntitle: Hidden\ndescription: Draft\npublishedAt: 2028-01-01\ndraft: true\n---\nDraft\n');
     build();
+    const home = await readFile(at('dist/index.html'), 'utf8');
+    const archive = await readFile(at('dist/articles/index.html'), 'utf8');
+    assert.equal((home.match(/class="article-card"/g) ?? []).length, 5);
+    assert.equal((archive.match(/class="article-card"/g) ?? []).length, 9);
+    const latestIds = [...home.matchAll(/href="\/articles\/(latest-\d)\/"/g)].map((match) => match[1]);
+    assert.deepEqual(latestIds, ['latest-6', 'latest-5', 'latest-4', 'latest-3', 'latest-2']);
+    assert.doesNotMatch(archive, /href="\/articles\/(?:hidden-draft|about)\/"/);
+    const about = await readFile(at('dist/about/index.html'), 'utf8');
+    assert.match(about, /このブログについて/);
+    assert.match(about, /<prose-content/);
+    const linked = await readFile(at('dist/linked/index.html'), 'utf8');
+    assert.match(linked, /href="https:\/\/github.com\/monerinngu0\/mone-blog"/);
   } finally {
     await rm(fixture, { recursive: true, force: true });
   }

@@ -1,5 +1,24 @@
 mone's blog generator
 
+## Home・Articles・About・Linked
+
+- `/`（Home）は公開日が新しい記事を最大5件表示します。
+- `/articles/` はすべての公開記事を新しい順に表示します。
+- `/about/` の本文は `content/pages/about/index.mdx` で編集します。frontmatterは `title` と `description` だけです。見出し・数式・画像・コード・MDX部品を通常の記事と同じように使えます。Aboutは記事一覧やTutorialの章には含みません。
+- `/linked/` は `content/linked.json` の配列順にリンクを表示します。各項目には表示名 `name` とURL `url` だけを書きます。URLは `https://` または `http://` に対応します。
+
+```json
+[
+  { "name": "GitHub", "url": "https://github.com/monerinngu0" }
+]
+```
+
+### 画像の拡大とコードのコピー
+
+記事とAboutの画像はクリック（キーボードではフォーカスしてEnter）すると画面中央に大きく表示されます。閉じるボタン・画像の外側のクリック・Escで閉じられます。Markdown画像と `ArticleImage` の両方に対応します。リンク付き画像はリンク先への移動を優先します。
+
+コードブロックの右上には `Copy` ボタンを表示します。シンタックスハイライトの装飾を除いたコード本文をコピーし、成功時は `Copied!`、失敗時は再試行の案内を表示します。
+
 ## Articleの本文
 
 記事は `content/articles/` 配下に記事ごとのフォルダを作り、その中の `index.mdx` に書きます。通常のMarkdownに加えて、数式・画像・インタラクティブグラフ・動画を利用できます。

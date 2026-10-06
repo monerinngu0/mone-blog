@@ -1,5 +1,5 @@
 ---
-import 'katex/dist/katex.min.css';
+import Prose from '../components/Prose.astro';
 import type { CollectionEntry } from 'astro:content';
 import TopicLinks from '../components/TopicLinks.astro';
 import BaseLayout from './BaseLayout.astro';
@@ -42,9 +42,9 @@ const formatDate = (date: Date) =>
       <Prerequisites items={prerequisites} />
     </header>
 
-    <div class="prose">
+    <Prose>
       <slot />
-    </div>
+    </Prose>
     {tutorial && <TutorialNav tutorial={tutorial} articleId={articleId} compact />}
   </article>
   </div>
@@ -88,24 +88,4 @@ const formatDate = (date: Date) =>
     font-size: 0.88rem;
   }
 
-  .prose :global(h2) {
-    margin-top: 2.6em;
-    font-size: 1.65rem;
-    line-height: 1.35;
-  }
-
-  .prose :global(h3) {
-    margin-top: 2em;
-    font-size: 1.25rem;
-  }
-
-  .prose :global(p),
-  .prose :global(ul),
-  .prose :global(ol) {
-    margin-block: 1.2em;
-  }
-
-  .prose :global(a) {
-    color: var(--accent);
-  }
 </style>

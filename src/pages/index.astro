@@ -19,11 +19,12 @@ const articles = allArticles.slice(0, 5);
 
   <section class="latest shell">
     <div class="section-heading">
-      <h2>Latest Articles</h2>
+      <h2>最新の記事</h2>
       <a href="/articles/">すべて見る →</a>
     </div>
 
     <div class="article-list">
+      {articles.length === 0 && <p>記事はまだありません。</p>}
       {articles.map((article) => (
         <article class="article-card">
           <div>

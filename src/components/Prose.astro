@@ -1,0 +1,161 @@
+---
+import 'katex/dist/katex.min.css';
+---
+
+<prose-content>
+  <div class="prose"><slot /></div>
+  <dialog class="image-viewer" aria-label="画像の拡大表示">
+    <button class="close-viewer" type="button" aria-label="拡大表示を閉じる" autofocus>閉じる ×</button>
+    <figure>
+      <img class="expanded-image" alt="" />
+      <figcaption></figcaption>
+    </figure>
+  </dialog>
+</prose-content>
+
+<script>
+  class ProseContent extends HTMLElement {
+    connectedCallback() {
+      if (this.dataset.ready) return;
+      this.dataset.ready = 'true';
+      const prose = this.querySelector<HTMLElement>('.prose')!;
+      const dialog = this.querySelector<HTMLDialogElement>('dialog')!;
+      const expanded = dialog.querySelector<HTMLImageElement>('img')!;
+      const caption = dialog.querySelector('figcaption')!;
+      let opener: HTMLElement | null = null;
+      let previousOverflow = '';
+
+      prose.querySelectorAll<HTMLImageElement>('img').forEach((image) => {
+        // Preserve linked images and existing interactive controls.
+        if (image.closest('a, button, [data-jsxgraph]')) return;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'image-zoom';
+        button.setAttribute('aria-label', `${image.alt || '画像'}を拡大`);
+        button.setAttribute('aria-haspopup', 'dialog');
+        const target = image.closest('picture') ?? image;
+        target.replaceWith(button);
+        button.append(target);
+        button.addEventListener('click', () => {
+          opener = button;
+          expanded.src = image.dataset.zoomSrc || image.currentSrc || image.src;
+          expanded.alt = image.alt;
+          expanded.style.setProperty('--image-ratio', String(image.naturalWidth / image.naturalHeight || 1));
+          caption.textContent = image.closest('figure')?.querySelector('figcaption')?.textContent || image.alt;
+          dialog.showModal();
+          previousOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+        });
+      });
+
+      dialog.querySelector('button')!.addEventListener('click', () => dialog.close());
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+      // Native dialog handles Escape, focus trapping and background inertness.
+      dialog.addEventListener('close', () => {
+        document.body.style.overflow = previousOverflow;
+        expanded.removeAttribute('src');
+        opener?.focus();
+      });
+
+      prose.querySelectorAll<HTMLPreElement>('pre').forEach((pre) => {
+        const code = pre.querySelector('code');
+        if (!code) return;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'code-block';
+        pre.replaceWith(wrapper);
+        wrapper.append(pre);
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'copy-code';
+        button.textContent = 'Copy';
+        button.setAttribute('aria-label', 'コードをコピー');
+        const status = document.createElement('span');
+        status.className = 'copy-status';
+        status.setAttribute('role', 'status');
+        wrapper.append(button, status);
+        button.addEventListener('click', async () => {
+          button.disabled = true;
+          try {
+            const text = code.textContent ?? '';
+            if (navigator.clipboard?.writeText) {
+              await navigator.clipboard.writeText(text);
+            } else {
+              // Local HTTP previews may not expose the Clipboard API.
+              const textarea = document.createElement('textarea');
+              textarea.value = text;
+              textarea.style.cssText = 'position:fixed;left:-9999px;top:0';
+              document.body.append(textarea);
+              try {
+                textarea.select();
+                if (!document.execCommand('copy')) throw new Error('Copy failed');
+              } finally {
+                textarea.remove();
+                button.focus();
+              }
+            }
+            button.textContent = 'Copied!';
+            status.textContent = 'コピーしました';
+          } catch {
+            button.textContent = 'Retry';
+            status.textContent = 'コピーできませんでした。コードを選択してコピーしてください。';
+          } finally {
+            button.disabled = false;
+            window.setTimeout(() => { button.textContent = 'Copy'; }, 2000);
+          }
+        });
+      });
+    }
+  }
+  if (!customElements.get('prose-content')) customElements.define('prose-content', ProseContent);
+</script>
+
+<style is:global>
+  prose-content { display: block; min-width: 0; }
+  .prose { overflow-wrap: anywhere; }
+  .prose h2 { margin-top: 2.6em; font-size: 1.65rem; line-height: 1.35; }
+  .prose h3 { margin-top: 2em; font-size: 1.25rem; }
+  .prose p, .prose ul, .prose ol { margin-block: 1.2em; }
+  .prose a { color: var(--accent); }
+  .prose img { max-width: 100%; height: auto; }
+  .prose .image-zoom {
+    display: inline-block; width: 100%; max-width: 100%; padding: 0; border: 0;
+    background: transparent; color: inherit; cursor: zoom-in; border-radius: 12px;
+  }
+  .prose .image-zoom img { display: block; }
+  .prose .article-media .image-zoom { display: block; width: 100%; }
+  .image-zoom:focus-visible, .copy-code:focus-visible, .close-viewer:focus-visible {
+    outline: 3px solid var(--accent); outline-offset: 4px;
+  }
+  .code-block { position: relative; margin-block: 1.2em; }
+  .code-block pre { margin: 0; padding-top: 52px; overflow-wrap: normal; }
+  .copy-code {
+    position: absolute; top: 10px; right: 10px; padding: 5px 11px;
+    border: 1px solid #667085; border-radius: 6px; background: #252a36;
+    color: #fff; font: inherit; font-size: 0.8rem; cursor: pointer;
+  }
+  .copy-code:hover { background: #39456f; }
+  .copy-status { display: block; color: var(--muted); font-size: 0.8rem; }
+  .copy-status:empty { display: none; }
+  .image-viewer {
+    position: fixed; inset: 0; width: 100vw; max-width: 100vw;
+    height: 100dvh; max-height: 100dvh; margin: 0; padding: 64px 20px 24px;
+    border: 0; background: transparent; color: #fff;
+  }
+  .image-viewer[open] { display: flex; justify-content: center; align-items: center; }
+  .image-viewer::backdrop { background: rgb(0 0 0 / 88%); }
+  .image-viewer figure { margin: 0; max-width: 100%; pointer-events: none; }
+  .image-viewer .expanded-image {
+    display: block; width: min(calc(100vw - 40px), calc((100dvh - 180px) * var(--image-ratio, 1)));
+    height: auto; max-width: calc(100vw - 40px);
+    max-height: calc(100dvh - 180px); margin: auto; object-fit: contain;
+    pointer-events: auto;
+  }
+  .image-viewer figcaption { margin-top: 12px; text-align: center; max-height: 3.5em; overflow: auto; }
+  .close-viewer {
+    position: absolute; top: 16px; right: 20px; padding: 8px 14px;
+    border: 1px solid #98a2b3; border-radius: 8px; background: #252a36;
+    color: #fff; font: inherit; cursor: pointer;
+  }
+</style>

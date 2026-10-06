@@ -42,4 +42,16 @@ const tutorials = defineCollection({
   }),
 });
 
-export const collections = { articles, topics, tutorials };
+const pages = defineCollection({
+  loader: glob({
+    base: './content/pages',
+    pattern: '*/index.mdx',
+    generateId: ({ entry }) => entry.split('/')[0],
+  }),
+  schema: z.object({
+    title: z.string().trim().min(1),
+    description: z.string().trim().min(1),
+  }),
+});
+
+export const collections = { articles, topics, tutorials, pages };
