@@ -2,7 +2,27 @@ mone's blog generator
 
 ## Articleの本文
 
-記事は `src/content/articles/<id>.mdx` に書きます。通常のMarkdownに加えて、数式・画像・インタラクティブグラフ・動画を利用できます。
+記事は `content/articles/` 配下に記事ごとのフォルダを作り、その中の `index.mdx` に書きます。通常のMarkdownに加えて、数式・画像・インタラクティブグラフ・動画を利用できます。
+
+### フォルダ構成と記事ID
+
+- `content/articles/**/index.mdx` だけが記事本体です。`index.mdx` がないフォルダは整理用で、記事一覧や参照の対象になりません。他の名前の `.md` / `.mdx` も記事として読み込みません。
+- 記事IDは `index.mdx` の直上のフォルダ名です。小文字英数字とハイフンを使います（例: `vector-capacity`）。frontmatterの `slug` では変更しません。
+- 整理用フォルダは何階層でも作れます。記事フォルダの中に別の記事フォルダを置くこともできます。
+- 記事フォルダ名は、下書きを含め `content/articles/` 全体で一意にします。異なる階層に同名の記事がある場合はビルドエラーです。
+- 整理用フォルダ名は重複して構いません。記事フォルダと同じ名前でも、`index.mdx` がなければ記事IDの重複にはなりません。
+- 階層を移動してもフォルダ名を変えなければURL・Tutorial・前提記事の参照は変わりません。参照には常に記事IDだけを使います。
+
+例: `content/articles/cpp/vector/vector-capacity/index.mdx` のIDは `vector-capacity`、URLは `/articles/vector-capacity/` です。
+
+記事フォルダの中身は次のとおりです。
+
+| パス | 用途 |
+| --- | --- |
+| `index.mdx` | 記事本体・frontmatter。記事フォルダの判定に使用 |
+| `img/` | その記事で使う画像。画像ファイルを直下に置き、基本的にサブフォルダは作らない |
+
+既存のJSXGraph用 `graph.js` も、それを使う記事フォルダに同梱しています。共通コンポーネントは `@components/` でimportするので、整理用フォルダの階層に影響されません。TopicsとTutorialsの定義もルートの `content/topics/`・`content/tutorials/` に置きます。Astroの設定ファイルは `src/content.config.ts` です。
 
 ### LaTeX数式
 
@@ -18,11 +38,11 @@ $$
 
 ### 画像
 
-キャプションが必要な画像は `ArticleImage` を使います。画像は `src/assets/articles/` に置くと、Astroがサイズに合わせて最適化します。`alt` は必須です。
+キャプションが必要な画像は `ArticleImage` を使います。画像は各記事の `img/` 直下に置き、`./img/ファイル名` からimportすると、Astroがサイズに合わせて最適化します。`alt` は必須です。
 
 ```mdx
-import ArticleImage from '../../components/article/ArticleImage.astro';
-import diagram from '../../assets/articles/example.png';
+import ArticleImage from '@components/article/ArticleImage.astro';
+import diagram from './img/example.png';
 
 <ArticleImage
   src={diagram}
@@ -31,14 +51,14 @@ import diagram from '../../assets/articles/example.png';
 />
 ```
 
-キャプションが不要なら通常のMarkdown記法 `![代替テキスト](../../assets/articles/example.png)` も使えます。
+キャプションが不要なら通常のMarkdown記法 `![代替テキスト](./img/example.png)` も使えます。
 
 ### JSXGraph
 
-グラフの処理は `src/graphs/` のJavaScriptモジュールに分けます。MDXには表示枠だけを書くため、長い処理が本文に混ざりません。同じページに複数置く場合は、それぞれ異なる `id` を指定します。
+グラフの処理は記事フォルダ内のJavaScriptモジュールに分けます。MDXには表示枠だけを書くため、長い処理が本文に混ざりません。同じページに複数置く場合は、それぞれ異なる `id` を指定します。
 
 ```js
-// src/graphs/quadratic.js
+// 記事フォルダ内の quadratic.js
 export default function setup(board) {
   const a = board.create('slider', [[-4, -4], [1, -4], [-2, 1, 2]], {
     name: 'a',
@@ -48,8 +68,8 @@ export default function setup(board) {
 ```
 
 ```mdx
-import JSXGraph from '../../components/article/JSXGraph.astro';
-import quadraticGraph from '../../graphs/quadratic.js?url';
+import JSXGraph from '@components/article/JSXGraph.astro';
+import quadraticGraph from './quadratic.js?url';
 
 <JSXGraph
   id="quadratic-graph"
@@ -66,7 +86,7 @@ import quadraticGraph from '../../graphs/quadratic.js?url';
 YouTubeはプライバシー強化モードで埋め込みます。URL全体ではなく11文字の動画IDを指定します。
 
 ```mdx
-import YouTube from '../../components/article/YouTube.astro';
+import YouTube from '@components/article/YouTube.astro';
 
 <YouTube
   id="dQw4w9WgXcQ"
@@ -78,7 +98,7 @@ import YouTube from '../../components/article/YouTube.astro';
 自分で配信する動画は `public/videos/` に置き、`Video` を使います。字幕がある場合はWebVTTファイルも指定できます。
 
 ```mdx
-import Video from '../../components/article/Video.astro';
+import Video from '@components/article/Video.astro';
 
 <Video
   src="/videos/example.mp4"
@@ -92,7 +112,7 @@ import Video from '../../components/article/Video.astro';
 
 ## Tutorials
 
-`src/content/tutorials/<id>.yaml` にシリーズを定義します。ファイル名は小文字英数字とハイフンで指定します。
+`content/tutorials/<id>.yaml` にシリーズを定義します。ファイル名は小文字英数字とハイフンで指定します。
 
 ```yaml
 title: std::vectorを理解する
@@ -131,10 +151,10 @@ prerequisites:
 
 ## Topics
 
-Topicは `src/content/topics/<id>.yaml` で定義します。ファイル名がURLと記事からの参照IDになります（小文字英数字とハイフン）。表示名は自由に変更できます。
+Topicは `content/topics/<id>.yaml` で定義します。ファイル名がURLと記事からの参照IDになります（小文字英数字とハイフン）。表示名は自由に変更できます。
 
 ```yaml
-# src/content/topics/cpp.yaml
+# content/topics/cpp.yaml
 name: C++
 description: C++の言語仕様や機能を、仕組みから理解する記事。
 ```
@@ -161,3 +181,5 @@ npm install
 npm run build
 npm run dev
 ```
+
+記事フォルダの読み込み・重複検出・移動後の参照は `npm test` で検証できます（元の記事を変更せず、一時ディレクトリでビルドします）。

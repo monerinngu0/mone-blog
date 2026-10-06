@@ -1,6 +1,7 @@
 import { defineCollection, reference } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { articleFolders } from './loaders/articles';
 
 const prerequisites = z.array(z.union([
   z.string().trim().min(1).transform((text) => ({ text })),
@@ -9,10 +10,7 @@ const prerequisites = z.array(z.union([
 ])).default([]);
 
 const articles = defineCollection({
-  loader: glob({
-    base: './src/content/articles',
-    pattern: '**/*.{md,mdx}',
-  }),
+  loader: articleFolders(),
   schema: z.object({
     title: z.string(),
     description: z.string(),
@@ -26,7 +24,7 @@ const articles = defineCollection({
 });
 
 const topics = defineCollection({
-  loader: glob({ base: './src/content/topics', pattern: '*.yaml' }),
+  loader: glob({ base: './content/topics', pattern: '*.yaml' }),
   schema: z.object({
     name: z.string().trim().min(1),
     description: z.string().trim().min(1),
@@ -34,7 +32,7 @@ const topics = defineCollection({
 });
 
 const tutorials = defineCollection({
-  loader: glob({ base: './src/content/tutorials', pattern: '*.yaml' }),
+  loader: glob({ base: './content/tutorials', pattern: '*.yaml' }),
   schema: z.object({
     title: z.string().trim().min(1),
     description: z.string().trim().min(1),

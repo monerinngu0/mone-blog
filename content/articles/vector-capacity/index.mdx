@@ -11,10 +11,10 @@ prerequisites:
   - text: "配列の基本を知っている"
 ---
 
-import ArticleImage from '../../components/article/ArticleImage.astro';
-import JSXGraph from '../../components/article/JSXGraph.astro';
-import capacityImage from '../../assets/articles/vector-size-capacity.svg';
-import capacityGraph from '../../graphs/vector-capacity.js?url';
+import ArticleImage from '@components/article/ArticleImage.astro';
+import JSXGraph from '@components/article/JSXGraph.astro';
+import capacityImage from './img/vector-size-capacity.svg';
+import capacityGraph from './graph.js?url';
 
 `std::vector` には、現在の要素数を返す `size()` と、確保済み領域の大きさを返す `capacity()` があります。
 
