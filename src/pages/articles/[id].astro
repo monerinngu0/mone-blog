@@ -4,15 +4,16 @@ import { getSiteContent } from '../../lib/content';
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
 
 export async function getStaticPaths() {
-  const { articles } = await getSiteContent();
+  const { articles, tutorials } = await getSiteContent();
 
   return articles.map((article) => ({
     params: { id: article.id },
-    props: { article },
+    props: { article, tutorials: tutorials.filter((tutorial) =>
+      tutorial.chapters.some(({ id }) => id === article.id)) },
   }));
 }
 
-const { article } = Astro.props;
+const { article, tutorials } = Astro.props;
 const { Content } = await render(article);
 ---
 
@@ -23,6 +24,8 @@ const { Content } = await render(article);
   updatedAt={article.data.updatedAt}
   topics={article.topics}
   prerequisites={article.data.prerequisites}
+  articleId={article.id}
+  tutorials={tutorials}
 >
   <Content />
 </ArticleLayout>

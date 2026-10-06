@@ -27,4 +27,14 @@ const topics = defineCollection({
   }),
 });
 
-export const collections = { articles, topics };
+const tutorials = defineCollection({
+  loader: glob({ base: './src/content/tutorials', pattern: '*.yaml' }),
+  schema: z.object({
+    title: z.string().trim().min(1),
+    description: z.string().trim().min(1),
+    articles: z.array(reference('articles')).min(1),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { articles, topics, tutorials };

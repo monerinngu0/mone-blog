@@ -1,0 +1,36 @@
+---
+import type { Tutorial } from '../lib/content';
+interface Props { tutorial: Tutorial; articleId: string; compact?: boolean; }
+const { tutorial, articleId, compact = false } = Astro.props;
+const index = tutorial.chapters.findIndex(({ id }) => id === articleId);
+const previous = tutorial.chapters[index - 1];
+const next = tutorial.chapters[index + 1];
+---
+<nav aria-label={`${tutorial.data.title}の章ナビゲーション`}>
+  {compact ? <>
+    <p><a href={`/tutorials/${tutorial.id}/`}>{tutorial.data.title}</a> · {index + 1} / {tutorial.chapters.length}</p>
+    <div class="adjacent">
+      <div>{previous && <a rel="prev" href={`/articles/${previous.id}/`}>← {previous.data.title}</a>}</div>
+      <div>{next && <a rel="next" href={`/articles/${next.id}/`}>{next.data.title} →</a>}</div>
+    </div>
+  </> : <details open>
+    <summary>章一覧 · {index + 1} / {tutorial.chapters.length}</summary>
+    <p><a href={`/tutorials/${tutorial.id}/`}>{tutorial.data.title}</a></p>
+    <ol>
+      {tutorial.chapters.map((chapter) => <li>
+        <a href={`/articles/${chapter.id}/`} aria-current={chapter.id === articleId ? 'page' : undefined}>{chapter.data.title}</a>
+      </li>)}
+    </ol>
+  </details>}
+</nav>
+<style>
+  nav { margin: 0 0 28px; padding: 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); font-size: 0.9rem; }
+  p { margin: 0 0 12px; }
+  summary { cursor: pointer; font-weight: 650; margin-bottom: 12px; }
+  ol { margin: 0; padding-left: 1.5rem; }
+  li { margin-top: 10px; }
+  a[aria-current='page'] { color: var(--accent); font-weight: 750; }
+  .adjacent { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .adjacent > :last-child { text-align: right; }
+  @media (max-width: 480px) { .adjacent { grid-template-columns: 1fr; } }
+</style>

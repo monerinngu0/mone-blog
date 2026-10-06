@@ -2,6 +2,8 @@
 import type { CollectionEntry } from 'astro:content';
 import TopicLinks from '../components/TopicLinks.astro';
 import BaseLayout from './BaseLayout.astro';
+import TutorialNav from '../components/TutorialNav.astro';
+import type { Tutorial } from '../lib/content';
 
 interface Props {
   title: string;
@@ -10,16 +12,22 @@ interface Props {
   updatedAt?: Date;
   topics: CollectionEntry<'topics'>[];
   prerequisites: string[];
+  articleId: string;
+  tutorials: Tutorial[];
 }
 
-const { title, description, publishedAt, updatedAt, topics, prerequisites } = Astro.props;
+const { title, description, publishedAt, updatedAt, topics, prerequisites, articleId, tutorials } = Astro.props;
 
 const formatDate = (date: Date) =>
   new Intl.DateTimeFormat('ja-JP', { dateStyle: 'long' }).format(date);
 ---
 
 <BaseLayout title={title} description={description}>
-  <article class="article shell">
+  <div class:list={['reading shell', { 'with-tutorial': tutorials.length > 0 }]}>
+    {tutorials.length > 0 && <aside class="chapter-sidebar">
+      {tutorials.map((tutorial) => <TutorialNav tutorial={tutorial} articleId={articleId} />)}
+    </aside>}
+  <article class="article">
     <header class="article-header">
       <TopicLinks topics={topics} />
       <h1>{title}</h1>
@@ -42,13 +50,21 @@ const formatDate = (date: Date) =>
     <div class="prose">
       <slot />
     </div>
+    {tutorials.map((tutorial) => <TutorialNav tutorial={tutorial} articleId={articleId} compact />)}
   </article>
+  </div>
 </BaseLayout>
 
 <style>
-  .article {
+  .reading {
     max-width: 780px;
     padding-top: 64px;
+  }
+  .article { min-width: 0; }
+  .chapter-sidebar { min-width: 0; }
+  @media (min-width: 1000px) {
+    .reading.with-tutorial { max-width: 1100px; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 48px; }
+    .chapter-sidebar { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow-y: auto; }
   }
 
   .article-header {

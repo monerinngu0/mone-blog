@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getSiteContent } from '../../lib/content';
+const { tutorials } = await getSiteContent();
+---
+<BaseLayout title="Tutorials" description="記事を順番に読み進めて学ぶシリーズ">
+  <section class="shell page">
+    <p>Tutorials</p>
+    <h1>順番に学ぶ</h1>
+    <p>記事をひとつずつ読み進め、テーマへの理解を深めます。</p>
+    <ul>
+      {tutorials.map((tutorial) => <li>
+        <h2><a href={`/tutorials/${tutorial.id}/`}>{tutorial.data.title}</a></h2>
+        <p>{tutorial.data.description}</p>
+        <span>{tutorial.chapters.length} 章</span>
+      </li>)}
+    </ul>
+    {tutorials.length === 0 && <p>公開中のTutorialはまだありません。</p>}
+  </section>
+</BaseLayout>
+<style>
+  .page { max-width: 900px; padding-top: 64px; }
+  h1 { font-size: clamp(2rem, 6vw, 4rem); margin: 0; }
+  ul { list-style: none; padding: 0; margin-top: 40px; }
+  li { padding: 24px 0; border-top: 1px solid var(--line); }
+  h2 { margin: 0; font-size: 1.4rem; }
+  p, span { color: var(--muted); }
+</style>
