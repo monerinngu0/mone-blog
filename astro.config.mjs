@@ -5,15 +5,15 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
 export default defineConfig({
-  output: 'static',
-  devToolbar: {
-    enabled: false,
-  },
-  markdown: {
-    processor: unified({
-      remarkPlugins: [remarkMath],
-      rehypePlugins: [rehypeKatex],
-    }),
-  },
-  integrations: [mdx()],
+    output: 'static',
+    devToolbar: {
+        enabled: false,
+    },
+    markdown: {
+        processor: unified({
+            remarkPlugins: [remarkMath],
+            rehypePlugins: [rehypeKatex],
+        }),
+    },
+    integrations: [mdx()],
 });

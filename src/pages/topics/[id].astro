@@ -4,89 +4,97 @@ import TopicLinks from '../../components/TopicLinks.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 export async function getStaticPaths() {
-  const { articles, topics } = await getSiteContent();
-  return topics.map((topic) => ({
-    params: { id: topic.id },
-    props: {
-      topic,
-      articles: articles.filter((article) => article.topics.some(({ id }) => id === topic.id)),
-    },
-  }));
+    const { articles, topics } = await getSiteContent();
+    return topics.map((topic) => ({
+        params: { id: topic.id },
+        props: {
+            topic,
+            articles: articles.filter((article) =>
+                article.topics.some(({ id }) => id === topic.id),
+            ),
+        },
+    }));
 }
 const { topic, articles } = Astro.props;
 ---
 
 <BaseLayout title={topic.data.name} description={topic.data.description}>
-  <section class="shell page">
-    <header>
-      <p class="eyebrow"><a href="/topics/">すべてのTopics</a></p>
-      <h1>{topic.data.name}</h1>
-      <p>{topic.data.description}</p>
-      <p>{articles.length} 記事</p>
-    </header>
+    <section class="shell page">
+        <header>
+            <p class="eyebrow">
+                <a href="/topics/">すべてのTopics</a>
+            </p>
+            <h1>{topic.data.name}</h1>
+            <p>{topic.data.description}</p>
+            <p>{articles.length} 記事</p>
+        </header>
 
-    {articles.length === 0 && <p>このTopicの公開記事はまだありません。</p>}
-    <div class="article-list">
-      {articles.map((article) => (
-        <article class="article-card">
-          <TopicLinks topics={article.topics} />
-          <h2><a href={`/articles/${article.id}/`}>{article.data.title}</a></h2>
-          <p>{article.data.description}</p>
-          <time datetime={article.data.publishedAt.toISOString()}>
-            {article.data.publishedAt.toLocaleDateString('ja-JP')}
-          </time>
-        </article>
-      ))}
-    </div>
-  </section>
+        {articles.length === 0 && <p>このTopicの公開記事はまだありません。</p>}
+        <div class="article-list">
+            {articles.map((article) => (
+                <article class="article-card">
+                    <TopicLinks topics={article.topics} />
+                    <h2>
+                        <a href={`/articles/${article.id}/`}>{article.data.title}</a>
+                    </h2>
+                    <p>{article.data.description}</p>
+                    <time datetime={article.data.publishedAt.toISOString()}>
+                        {article.data.publishedAt.toLocaleDateString('ja-JP')}
+                    </time>
+                </article>
+            ))}
+        </div>
+    </section>
 </BaseLayout>
 
 <style>
-  .page {
-    max-width: 900px;
-    padding-top: var(--page-top);
-  }
+    .page {
+        max-width: 900px;
+        padding-top: var(--page-top);
+    }
 
-  header {
-    margin-bottom: 28px;
-  }
+    header {
+        margin-bottom: 28px;
+    }
 
-  .eyebrow {
-    margin: 0 0 8px;
-    color: var(--accent);
-    font-size: 0.85rem; font-weight: 650;
-  }
+    .eyebrow {
+        margin: 0 0 8px;
+        color: var(--accent);
+        font-size: 0.85rem;
+        font-weight: 650;
+    }
 
-  h1 {
-    margin: 0;
-    font-size: var(--page-title-size); line-height: 1.3;
-    letter-spacing: -0.025em;
-  }
+    h1 {
+        margin: 0;
+        font-size: var(--page-title-size);
+        line-height: 1.3;
+        letter-spacing: -0.025em;
+    }
 
-  header > p:last-child {
-    color: var(--muted);
-  }
+    header > p:last-child {
+        color: var(--muted);
+    }
 
-  .article-card {
-    display: block;
-    padding: 20px 0;
-    border-top: 1px solid var(--line);
-    text-decoration: none;
-  }
+    .article-card {
+        display: block;
+        padding: 20px 0;
+        border-top: 1px solid var(--line);
+        text-decoration: none;
+    }
 
-  .article-card h2 {
-    margin: 5px 0 7px;
-    font-size: 1.125rem;
-  }
+    .article-card h2 {
+        margin: 5px 0 7px;
+        font-size: 1.125rem;
+    }
 
-  .article-card p {
-    margin: 0 0 8px;
-    color: var(--muted);
-  }
+    .article-card p {
+        margin: 0 0 8px;
+        color: var(--muted);
+    }
 
-  .meta,
-  time {
-    color: var(--muted);
-    font-size: 0.82rem;
-  }
+    .meta,
+    time {
+        color: var(--muted);
+        font-size: 0.82rem;
+    }
 </style>

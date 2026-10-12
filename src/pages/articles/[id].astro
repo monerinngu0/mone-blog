@@ -4,13 +4,17 @@ import { getSiteContent } from '../../lib/content';
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
 
 export async function getStaticPaths() {
-  const { articles, tutorials } = await getSiteContent();
+    const { articles, tutorials } = await getSiteContent();
 
-  return articles.map((article) => ({
-    params: { id: article.id },
-    props: { article, tutorial: tutorials.find((tutorial) =>
-      tutorial.chapters.some(({ id }) => id === article.id)) },
-  }));
+    return articles.map((article) => ({
+        params: { id: article.id },
+        props: {
+            article,
+            tutorial: tutorials.find((tutorial) =>
+                tutorial.chapters.some(({ id }) => id === article.id),
+            ),
+        },
+    }));
 }
 
 const { article, tutorial } = Astro.props;
@@ -18,14 +22,14 @@ const { Content } = await render(article);
 ---
 
 <ArticleLayout
-  title={article.data.title}
-  description={article.data.description}
-  publishedAt={article.data.publishedAt}
-  updatedAt={article.data.updatedAt}
-  topics={article.topics}
-  prerequisites={article.prerequisites}
-  articleId={article.id}
-  tutorial={tutorial}
+    title={article.data.title}
+    description={article.data.description}
+    publishedAt={article.data.publishedAt}
+    updatedAt={article.data.updatedAt}
+    topics={article.topics}
+    prerequisites={article.prerequisites}
+    articleId={article.id}
+    tutorial={tutorial}
 >
-  <Content />
+    <Content />
 </ArticleLayout>

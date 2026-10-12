@@ -1,17 +1,43 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-interface Props { topics: CollectionEntry<'topics'>[]; }
+interface Props {
+    topics: CollectionEntry<'topics'>[];
+}
 const { topics } = Astro.props;
 ---
+
 {topics.length > 0 && (
-  <ul class="topic-links" aria-label="Topics">
-    {topics.map((topic) => (
-      <li><a href={`/topics/${topic.id}/`}>{topic.data.name}</a></li>
-    ))}
-  </ul>
+    <ul class="topic-links" aria-label="Topics">
+        {topics.map((topic) => (
+            <li>
+                <a href={`/topics/${topic.id}/`}>{topic.data.name}</a>
+            </li>
+        ))}
+    </ul>
 )}
 <style>
-  .topic-links { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0 0 14px; list-style: none; }
-  a { display: inline-block; padding: 3px 9px; border: 1px solid transparent; border-radius: 999px; background: var(--accent-soft); color: var(--accent-strong); font-size: 0.82rem; text-decoration: none; }
-  a:hover, a:focus-visible { color: var(--text); border-color: var(--highlight); background: var(--highlight-soft); }
+    .topic-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 0;
+        margin: 0 0 14px;
+        list-style: none;
+    }
+    a {
+        display: inline-block;
+        padding: 3px 9px;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent-strong);
+        font-size: 0.82rem;
+        text-decoration: none;
+    }
+    a:hover,
+    a:focus-visible {
+        color: var(--text);
+        border-color: var(--highlight);
+        background: var(--highlight-soft);
+    }
 </style>

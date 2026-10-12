@@ -8,90 +8,101 @@ import type { Tutorial, Prerequisite } from '../lib/content';
 import Prerequisites from '../components/Prerequisites.astro';
 
 interface Props {
-  title: string;
-  description: string;
-  publishedAt: Date;
-  updatedAt?: Date;
-  topics: CollectionEntry<'topics'>[];
-  prerequisites: Prerequisite[];
-  articleId: string;
-  tutorial?: Tutorial;
+    title: string;
+    description: string;
+    publishedAt: Date;
+    updatedAt?: Date;
+    topics: CollectionEntry<'topics'>[];
+    prerequisites: Prerequisite[];
+    articleId: string;
+    tutorial?: Tutorial;
 }
 
-const { title, description, publishedAt, updatedAt, topics, prerequisites, articleId, tutorial } = Astro.props;
+const { title, description, publishedAt, updatedAt, topics, prerequisites, articleId, tutorial } =
+    Astro.props;
 
 const formatDate = (date: Date) =>
-  new Intl.DateTimeFormat('ja-JP', { dateStyle: 'long' }).format(date);
+    new Intl.DateTimeFormat('ja-JP', { dateStyle: 'long' }).format(date);
 ---
 
 <BaseLayout title={title} description={description}>
-  <div class:list={['reading shell', { 'with-tutorial': !!tutorial }]}>
-    {tutorial && <aside class="chapter-sidebar">
-      <TutorialNav tutorial={tutorial} articleId={articleId} />
-    </aside>}
-  <article class="article">
-    <header class="article-header">
-      <TopicLinks topics={topics} />
-      <h1>{title}</h1>
-      <p class="lead">{description}</p>
-      <div class="dates">
-        <span>公開: {formatDate(publishedAt)}</span>
-        {updatedAt && <span>更新: {formatDate(updatedAt)}</span>}
-      </div>
+    <div class:list={['reading shell', { 'with-tutorial': !!tutorial }]}>
+        {tutorial && (
+            <aside class="chapter-sidebar">
+                <TutorialNav tutorial={tutorial} articleId={articleId} />
+            </aside>
+        )}
+        <article class="article">
+            <header class="article-header">
+                <TopicLinks topics={topics} />
+                <h1>{title}</h1>
+                <p class="lead">{description}</p>
+                <div class="dates">
+                    <span>公開: {formatDate(publishedAt)}</span>
+                    {updatedAt && <span>更新: {formatDate(updatedAt)}</span>}
+                </div>
 
-      <Prerequisites items={prerequisites} />
-    </header>
+                <Prerequisites items={prerequisites} />
+            </header>
 
-    <Prose>
-      <slot />
-    </Prose>
-    {tutorial && <TutorialNav tutorial={tutorial} articleId={articleId} compact />}
-  </article>
-  </div>
+            <Prose>
+                <slot />
+            </Prose>
+            {tutorial && <TutorialNav tutorial={tutorial} articleId={articleId} compact />}
+        </article>
+    </div>
 </BaseLayout>
 
 <style>
-  .reading {
-    max-width: 780px;
-    padding-top: var(--page-top);
-  }
-  .article { min-width: 0; }
-  .chapter-sidebar { min-width: 0; }
-  @media (min-width: 1000px) {
-    .reading.with-tutorial { max-width: 1100px; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 48px; }
-    .chapter-sidebar {
-      position: sticky;
-      top: calc(var(--site-header-height) + 24px);
-      align-self: start;
-      max-height: calc(100vh - var(--site-header-height) - 48px);
-      overflow-y: auto;
+    .reading {
+        max-width: 780px;
+        padding-top: var(--page-top);
     }
-  }
+    .article {
+        min-width: 0;
+    }
+    .chapter-sidebar {
+        min-width: 0;
+    }
+    @media (min-width: 1000px) {
+        .reading.with-tutorial {
+            max-width: 1100px;
+            display: grid;
+            grid-template-columns: 250px minmax(0, 1fr);
+            gap: 48px;
+        }
+        .chapter-sidebar {
+            position: sticky;
+            top: calc(var(--site-header-height) + 24px);
+            align-self: start;
+            max-height: calc(100vh - var(--site-header-height) - 48px);
+            overflow-y: auto;
+        }
+    }
 
-  .article-header {
-    margin-bottom: 32px;
-  }
+    .article-header {
+        margin-bottom: 32px;
+    }
 
-  h1 {
-    margin: 0;
-    font-size: var(--page-title-size);
-    line-height: 1.35;
-    letter-spacing: -0.025em;
-  }
+    h1 {
+        margin: 0;
+        font-size: var(--page-title-size);
+        line-height: 1.35;
+        letter-spacing: -0.025em;
+    }
 
-  .lead {
-    margin: 12px 0 0;
-    color: var(--muted);
-    font-size: 1rem;
-  }
+    .lead {
+        margin: 12px 0 0;
+        color: var(--muted);
+        font-size: 1rem;
+    }
 
-  .dates {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-top: 16px;
-    color: var(--muted);
-    font-size: 0.88rem;
-  }
-
+    .dates {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-top: 16px;
+        color: var(--muted);
+        font-size: 0.88rem;
+    }
 </style>
