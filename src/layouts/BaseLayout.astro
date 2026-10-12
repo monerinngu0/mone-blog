@@ -68,6 +68,8 @@ const path = `${Astro.url.pathname.replace(/\/$/, '')}/`;
     --accent: #39456f;
     --code-bg: #151821;
     --site-header-height: 64px;
+    --page-top: clamp(32px, 5vw, 40px);
+    --page-title-size: clamp(2rem, 4vw, 2.5rem);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -156,8 +158,8 @@ const path = `${Astro.url.pathname.replace(/\/$/, '')}/`;
   nav a[aria-current="page"] { text-decoration: underline; }
 
   footer {
-    margin-top: 80px;
-    padding: 28px 0;
+    margin-top: 48px;
+    padding: 20px 0;
     border-top: 1px solid var(--line);
     color: var(--muted);
     font-size: 0.9rem;
