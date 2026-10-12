@@ -67,6 +67,7 @@ const path = `${Astro.url.pathname.replace(/\/$/, '')}/`;
     --line: #e4e7ec;
     --accent: #39456f;
     --code-bg: #151821;
+    --site-header-height: 64px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -87,6 +88,7 @@ const path = `${Astro.url.pathname.replace(/\/$/, '')}/`;
   html {
     background: var(--bg);
     color: var(--text);
+    scroll-padding-top: calc(var(--site-header-height) + 16px);
   }
 
   body {
@@ -107,14 +109,18 @@ const path = `${Astro.url.pathname.replace(/\/$/, '')}/`;
   }
 
   .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
     border-bottom: 1px solid var(--line);
     background: color-mix(in srgb, var(--bg) 88%, transparent);
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
   }
 
   .header-inner {
     width: min(1100px, calc(100% - 40px));
-    min-height: 64px;
+    min-height: var(--site-header-height);
     margin-inline: auto;
     display: flex;
     align-items: center;

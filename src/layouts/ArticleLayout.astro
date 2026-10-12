@@ -59,7 +59,13 @@ const formatDate = (date: Date) =>
   .chapter-sidebar { min-width: 0; }
   @media (min-width: 1000px) {
     .reading.with-tutorial { max-width: 1100px; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 48px; }
-    .chapter-sidebar { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow-y: auto; }
+    .chapter-sidebar {
+      position: sticky;
+      top: calc(var(--site-header-height) + 24px);
+      align-self: start;
+      max-height: calc(100vh - var(--site-header-height) - 48px);
+      overflow-y: auto;
+    }
   }
 
   .article-header {
