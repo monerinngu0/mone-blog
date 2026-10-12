@@ -6,8 +6,8 @@ const { tutorials } = await getSiteContent();
 <BaseLayout title="Tutorials" description="記事を順番に読み進めて学ぶシリーズ">
   <section class="shell page">
     <p>Tutorials</p>
-    <h1>順番に学ぶ</h1>
-    <p>記事をひとつずつ読み進め、テーマへの理解を深めます。</p>
+    <h1>チュートリアルくん</h1>
+    <p>ちゅーとりあるです</p>
     <ul>
       {tutorials.map((tutorial) => <li>
         <h2><a href={`/tutorials/${tutorial.id}/`}>{tutorial.data.title}</a></h2>
