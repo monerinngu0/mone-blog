@@ -10,7 +10,6 @@ for (const article of articles) {
 <BaseLayout title="Topics" description="テーマから記事を探す">
   <section class="shell page">
     <header>
-      <p class="eyebrow">Topics</p>
       <h1>トピックちゃん</h1>
       <p>タグ漬けしてあります</p>
     </header>
@@ -31,7 +30,6 @@ for (const article of articles) {
 <style>
   .page { max-width: 900px; padding-top: var(--page-top); }
   header { margin-bottom: 28px; }
-  .eyebrow { margin: 0 0 8px; color: var(--accent); font-size: 0.85rem; font-weight: 650; }
   h1 { margin: 0; font-size: var(--page-title-size); line-height: 1.3; letter-spacing: -0.025em; }
   header > p:last-child, li p, li span { color: var(--muted); }
   .topic-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 20px; list-style: none; padding: 0; }
