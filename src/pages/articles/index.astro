@@ -9,7 +9,6 @@ const { articles } = await getSiteContent();
 <BaseLayout title="Articles" description="すべての記事">
   <section class="shell page">
     <header>
-      <p class="eyebrow">Articles</p>
       <h1>記事さん</h1>
       <p>キジ(鳥)です</p>
     </header>
@@ -37,12 +36,6 @@ const { articles } = await getSiteContent();
 
   header {
     margin-bottom: 28px;
-  }
-
-  .eyebrow {
-    margin: 0 0 8px;
-    color: var(--accent);
-    font-size: 0.85rem; font-weight: 650;
   }
 
   h1 {
