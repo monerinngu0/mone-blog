@@ -65,7 +65,11 @@ const path = `${Astro.url.pathname.replace(/\/$/, '')}/`;
     --text: #1d2433;
     --muted: #667085;
     --line: #e4e7ec;
-    --accent: #39456f;
+    --accent: #6550a4;
+    --accent-strong: #4f378b;
+    --accent-soft: #eee8ff;
+    --highlight: #e5b700;
+    --highlight-soft: #fff1a8;
     --code-bg: #151821;
     --site-header-height: 64px;
     --page-top: clamp(32px, 5vw, 40px);
@@ -79,7 +83,11 @@ const path = `${Astro.url.pathname.replace(/\/$/, '')}/`;
       --text: #eaecf0;
       --muted: #98a2b3;
       --line: #2b303b;
-      --accent: #aab4df;
+      --accent: #c9bfff;
+      --accent-strong: #ded8ff;
+      --accent-soft: #302a49;
+      --highlight: #f1cb4b;
+      --highlight-soft: #493f1f;
     }
   }
 
@@ -103,6 +111,14 @@ const path = `${Astro.url.pathname.replace(/\/$/, '')}/`;
     color: inherit;
     text-decoration-color: color-mix(in srgb, var(--accent) 55%, transparent);
     text-underline-offset: 0.2em;
+  }
+
+  a:hover {
+    color: var(--accent-strong);
+  }
+
+  ::selection {
+    background: var(--highlight-soft);
   }
 
   .shell {
@@ -133,10 +149,22 @@ const path = `${Astro.url.pathname.replace(/\/$/, '')}/`;
   }
 
   .brand {
+    color: var(--accent);
     font-weight: 750;
     font-size: 1.1rem;
     text-decoration: none;
     letter-spacing: -0.02em;
+  }
+
+  .brand::after {
+    content: '';
+    display: inline-block;
+    width: 0.42em;
+    height: 0.42em;
+    margin-left: 0.28em;
+    border-radius: 50%;
+    background: var(--highlight);
+    vertical-align: 0.12em;
   }
 
   nav {
@@ -152,10 +180,14 @@ const path = `${Astro.url.pathname.replace(/\/$/, '')}/`;
   }
 
   nav a:hover, nav a[aria-current="page"] {
-    color: var(--text);
+    color: var(--accent);
   }
 
-  nav a[aria-current="page"] { text-decoration: underline; }
+  nav a[aria-current="page"] {
+    text-decoration: underline;
+    text-decoration-color: var(--highlight);
+    text-decoration-thickness: 2px;
+  }
 
   footer {
     margin-top: 48px;
