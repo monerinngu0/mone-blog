@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "test": "node --test scripts/test-article-folders.mjs",
-    "format": "prettier --write \"src/**/*.{astro,ts}\" \"scripts/**/*.mjs\" astro.config.mjs",
-    "format:check": "prettier --check \"src/**/*.{astro,ts}\" \"scripts/**/*.mjs\" astro.config.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",

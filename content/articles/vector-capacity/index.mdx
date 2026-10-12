@@ -1,14 +1,14 @@
 ---
-title: "std::vector の capacity とは何か"
-description: "size と capacity の違いから、動的配列がどのようにメモリを管理しているのかを見ていきます。"
+title: 'std::vector の capacity とは何か'
+description: 'size と capacity の違いから、動的配列がどのようにメモリを管理しているのかを見ていきます。'
 publishedAt: 2026-10-05
 topics:
-  - cpp
-  - stl
-  - memory
+    - cpp
+    - stl
+    - memory
 prerequisites:
-  - article: vector-introduction
-  - text: "配列の基本を知っている"
+    - article: vector-introduction
+    - text: '配列の基本を知っている'
 ---
 
 import ArticleImage from '@components/article/ArticleImage.astro';
@@ -40,9 +40,9 @@ int main() {
 `size()` は「いま何個の要素を持っているか」を表します。一方で `capacity()` は、再確保せずに保持できる要素数です。
 
 <ArticleImage
-  src={capacityImage}
-  alt="8個分の領域のうち5個を使用しているvector"
-  caption="size は使用中の要素数、capacity は確保済み領域全体の要素数です。"
+    src={capacityImage}
+    alt="8個分の領域のうち5個を使用しているvector"
+    caption="size は使用中の要素数、capacity は確保済み領域全体の要素数です。"
 />
 
 ## なぜ余分に確保するのか
@@ -60,11 +60,11 @@ $$
 $n$ 回の `push_back()` に対する移動回数の合計は $2n$ 未満です。下のスライダーで回数を変えると、合計が線形の範囲に収まる様子を確認できます。
 
 <JSXGraph
-  id="vector-capacity-growth"
-  module={capacityGraph}
-  boundingBox={[0, 140, 68, -14]}
-  axis={true}
-  caption="点は再確保で移動した要素数の合計です。破線は n と 2n を表します。"
+    id="vector-capacity-growth"
+    module={capacityGraph}
+    boundingBox={[0, 140, 68, -14]}
+    axis={true}
+    caption="点は再確保で移動した要素数の合計です。破線は n と 2n を表します。"
 />
 
 この「なぜ O(1) と言えるのか」は、別の記事で実際に導出します。

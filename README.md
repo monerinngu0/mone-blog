@@ -8,9 +8,7 @@ mone's blog generator
 - ナビゲーションの `Linked` ボタンを押すと、その下にリンク一覧が開きます。もう一度押す・外側を押す・Escで閉じられます。独立したページは作りません。`content/linked.json` の配列順に表示し、各項目には表示名 `name` とURL `url` だけを書きます。URLは `https://` または `http://` に対応します。
 
 ```json
-[
-  { "name": "GitHub", "url": "https://github.com/monerinngu0" }
-]
+[{ "name": "GitHub", "url": "https://github.com/monerinngu0" }]
 ```
 
 ### 画像の拡大とコードのコピー
@@ -36,10 +34,10 @@ mone's blog generator
 
 記事フォルダの中身は次のとおりです。
 
-| パス | 用途 |
-| --- | --- |
-| `index.mdx` | 記事本体・frontmatter。記事フォルダの判定に使用 |
-| `img/` | その記事で使う画像。画像ファイルを直下に置き、基本的にサブフォルダは作らない |
+| パス        | 用途                                                                         |
+| ----------- | ---------------------------------------------------------------------------- |
+| `index.mdx` | 記事本体・frontmatter。記事フォルダの判定に使用                              |
+| `img/`      | その記事で使う画像。画像ファイルを直下に置き、基本的にサブフォルダは作らない |
 
 既存のJSXGraph用 `graph.js` も、それを使う記事フォルダに同梱しています。共通コンポーネントは `@components/` でimportするので、整理用フォルダの階層に影響されません。TopicsとTutorialsの定義もルートの `content/topics/`・`content/tutorials/` に置きます。Astroの設定ファイルは `src/content.config.ts` です。
 
@@ -64,9 +62,9 @@ import ArticleImage from '@components/article/ArticleImage.astro';
 import diagram from './img/example.png';
 
 <ArticleImage
-  src={diagram}
-  alt="図の内容を説明する代替テキスト"
-  caption="本文を補足するキャプション"
+    src={diagram}
+    alt="図の内容を説明する代替テキスト"
+    caption="本文を補足するキャプション"
 />
 ```
 
@@ -79,10 +77,18 @@ import diagram from './img/example.png';
 ```js
 // 記事フォルダ内の quadratic.js
 export default function setup(board) {
-  const a = board.create('slider', [[-4, -4], [1, -4], [-2, 1, 2]], {
-    name: 'a',
-  });
-  board.create('functiongraph', [(x) => a.Value() * x * x]);
+    const a = board.create(
+        'slider',
+        [
+            [-4, -4],
+            [1, -4],
+            [-2, 1, 2],
+        ],
+        {
+            name: 'a',
+        },
+    );
+    board.create('functiongraph', [(x) => a.Value() * x * x]);
 }
 ```
 
@@ -91,10 +97,10 @@ import JSXGraph from '@components/article/JSXGraph.astro';
 import quadraticGraph from './quadratic.js?url';
 
 <JSXGraph
-  id="quadratic-graph"
-  module={quadraticGraph}
-  boundingBox={[-5, 5, 5, -5]}
-  caption="スライダーで係数 a を変更できます。"
+    id="quadratic-graph"
+    module={quadraticGraph}
+    boundingBox={[-5, 5, 5, -5]}
+    caption="スライダーで係数 a を変更できます。"
 />
 ```
 
@@ -107,11 +113,7 @@ YouTubeはプライバシー強化モードで埋め込みます。URL全体で�
 ```mdx
 import YouTube from '@components/article/YouTube.astro';
 
-<YouTube
-  id="dQw4w9WgXcQ"
-  title="動画の内容を表すタイトル"
-  caption="動画の補足"
-/>
+<YouTube id="dQw4w9WgXcQ" title="動画の内容を表すタイトル" caption="動画の補足" />
 ```
 
 自分で配信する動画は `public/videos/` に置き、`Video` を使います。字幕がある場合はWebVTTファイルも指定できます。
@@ -120,12 +122,12 @@ import YouTube from '@components/article/YouTube.astro';
 import Video from '@components/article/Video.astro';
 
 <Video
-  src="/videos/example.mp4"
-  type="video/mp4"
-  title="操作例"
-  poster="/videos/example-poster.webp"
-  captions="/videos/example-ja.vtt"
-  caption="実際の操作手順"
+    src="/videos/example.mp4"
+    type="video/mp4"
+    title="操作例"
+    poster="/videos/example-poster.webp"
+    captions="/videos/example-ja.vtt"
+    caption="実際の操作手順"
 />
 ```
 
@@ -137,8 +139,8 @@ import Video from '@components/article/Video.astro';
 title: std::vectorを理解する
 description: vectorの基本とメモリ確保を学ぶシリーズ。
 articles:
-  - vector-introduction
-  - vector-capacity
+    - vector-introduction
+    - vector-capacity
 ```
 
 `articles` は記事ファイルのIDを読む順番で並べます。本文のコピーや記事側のTutorial指定は不要です。本編として所属できるTutorialは記事ごとに1つだけです（下書きのTutorialも含む）。他のTutorialから利用する場合は前提記事として参照します。
@@ -159,14 +161,13 @@ ArticleのfrontmatterとTutorialのYAMLの両方で設定できます。
 
 ```yaml
 prerequisites:
-  - text: C++の配列を使ったことがある
-  - article: vector-introduction
+    - text: C++の配列を使ったことがある
+    - article: vector-introduction
 ```
 
 `text` は文章、`article` は記事IDです。記事リンクの表示名は参照先のタイトルから自動取得します。同じ前提記事を複数のArticle・Tutorialから参照できます。前提知識はArticleの冒頭またはTutorialの説明の下に表示します。
 
 前提記事が存在しない場合、公開コンテンツから下書き記事を参照する場合、記事が自分自身を前提にする場合はビルドエラーになります。各項目は `text` または `article` の片方だけを指定します。従来の文字列形式（`- 配列の基本を知っている`）も文章として読み込めます。
-
 
 ## Topics
 
@@ -182,8 +183,8 @@ description: C++の言語仕様や機能を、仕組みから理解する記事�
 
 ```yaml
 topics:
-  - cpp
-  - stl
+    - cpp
+    - stl
 ```
 
 - `/topics/`: Topicの説明と公開記事数
