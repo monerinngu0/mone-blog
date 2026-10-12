@@ -81,7 +81,7 @@ export async function getSiteContent() {
   return {
     articles,
     tutorials,
-    featuredTutorial: featuredTutorials[0],
+    featuredTutorial: featuredTutorials[0] ?? tutorials[0],
     topics: topics.sort((a, b) => a.data.name.localeCompare(b.data.name, 'ja')),
   };
 }

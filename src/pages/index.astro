@@ -208,8 +208,8 @@ for (const article of allArticles) {
   }
 
   .topic-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 12px;
     margin: 20px 0 0;
     padding: 0;
@@ -217,13 +217,12 @@ for (const article of allArticles) {
   }
 
   .topic-grid a {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
     gap: 12px;
-    padding: 12px 14px;
+    padding: 10px 16px;
     border: 1px solid transparent;
-    border-radius: 8px;
+    border-radius: 999px;
     background: var(--accent-soft);
     color: var(--accent-strong);
     text-decoration: none;
