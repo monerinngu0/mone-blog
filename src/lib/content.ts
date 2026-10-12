@@ -74,9 +74,14 @@ export async function getSiteContent() {
     };
   }).filter(({ data }) => !data.draft)
     .sort((a, b) => a.data.title.localeCompare(b.data.title, 'ja'));
+  const featuredTutorials = tutorials.filter(({ data }) => data.featured);
+  if (featuredTutorials.length > 1) {
+    throw new Error('Only one published tutorial can be featured on Home.');
+  }
   return {
     articles,
     tutorials,
+    featuredTutorial: featuredTutorials[0],
     topics: topics.sort((a, b) => a.data.name.localeCompare(b.data.name, 'ja')),
   };
 }

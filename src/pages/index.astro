@@ -3,8 +3,14 @@ import { getSiteContent } from '../lib/content';
 import TopicLinks from '../components/TopicLinks.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const { articles: allArticles } = await getSiteContent();
+const { articles: allArticles, featuredTutorial, topics } = await getSiteContent();
 const articles = allArticles.slice(0, 5);
+const topicCounts = new Map(topics.map((topic) => [topic.id, 0]));
+for (const article of allArticles) {
+  for (const topic of article.topics) {
+    topicCounts.set(topic.id, (topicCounts.get(topic.id) ?? 0) + 1);
+  }
+}
 ---
 
 <BaseLayout>
@@ -37,6 +43,42 @@ const articles = allArticles.slice(0, 5);
       ))}
     </div>
   </section>
+
+  <section class="home-section shell">
+    <div class="section-heading">
+      <h2>おすすめのチュートリアル</h2>
+      <a href="/tutorials/">すべて見る →</a>
+    </div>
+
+    {featuredTutorial ? (
+      <a class="tutorial-row" href={`/tutorials/${featuredTutorial.id}/`}>
+        <div>
+          <h3>{featuredTutorial.data.title}</h3>
+          <p>{featuredTutorial.data.description}</p>
+        </div>
+        <span>{featuredTutorial.chapters.length} 章</span>
+      </a>
+    ) : <p class="empty">おすすめのチュートリアルはまだありません。</p>}
+  </section>
+
+  <section class="home-section shell">
+    <div class="section-heading">
+      <h2>トピック</h2>
+      <a href="/topics/">すべて見る →</a>
+    </div>
+
+    <ul class="topic-grid">
+      {topics.map((topic) => (
+        <li>
+          <a href={`/topics/${topic.id}/`}>
+            <strong>{topic.data.name}</strong>
+            <span>{topicCounts.get(topic.id)} 記事</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+    {topics.length === 0 && <p class="empty">トピックはまだありません。</p>}
+  </section>
 </BaseLayout>
 
 <style>
@@ -64,6 +106,10 @@ const articles = allArticles.slice(0, 5);
 
   .latest {
     padding-top: 0;
+  }
+
+  .home-section {
+    margin-top: 48px;
   }
 
   .section-heading {
@@ -133,8 +179,77 @@ const articles = allArticles.slice(0, 5);
     font-size: 0.85rem;
   }
 
+  .tutorial-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 20px 0 20px 16px;
+    border-bottom: 1px solid var(--line);
+    border-left: 4px solid var(--accent);
+    text-decoration: none;
+  }
+
+  .tutorial-row h3 {
+    margin: 0 0 6px;
+    font-size: 1.125rem;
+  }
+
+  .tutorial-row p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .tutorial-row > span {
+    flex: none;
+    color: var(--accent-strong);
+    font-size: 0.85rem;
+    font-weight: 650;
+  }
+
+  .topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+    gap: 12px;
+    margin: 20px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .topic-grid a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+    text-decoration: none;
+  }
+
+  .topic-grid a:hover,
+  .topic-grid a:focus-visible {
+    border-color: var(--highlight);
+    background: var(--highlight-soft);
+    color: var(--text);
+  }
+
+  .topic-grid span,
+  .empty {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
   @media (max-width: 640px) {
     .article-card {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .tutorial-row {
+      align-items: flex-start;
       flex-direction: column;
       gap: 8px;
     }

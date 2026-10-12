@@ -38,6 +38,7 @@ const tutorials = defineCollection({
     description: z.string().trim().min(1),
     articles: z.array(reference('articles')).min(1),
     prerequisites,
+    featured: z.boolean().default(false),
     draft: z.boolean().default(false),
   }),
 });
