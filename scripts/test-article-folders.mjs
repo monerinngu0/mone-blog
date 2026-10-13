@@ -182,8 +182,8 @@ test('article IDs survive nesting and moves, and duplicate article folders fail'
         build();
         const home = await readFile(at('dist/index.html'), 'utf8');
         const archive = await readFile(at('dist/articles/index.html'), 'utf8');
-        assert.equal((home.match(/class="article-card"/g) ?? []).length, 5);
-        assert.equal((archive.match(/class="article-card"/g) ?? []).length, 9);
+        assert.equal((home.match(/class="[^"]*\\barticle-card\\b[^"]*"/g) ?? []).length, 5);
+        assert.equal((archive.match(/class="[^"]*\\barticle-card\\b[^"]*"/g) ?? []).length, 9);
         assert.match(archive, /id="standalone-only" type="checkbox"/);
         assert.equal((archive.match(/data-in-tutorial="true"/g) ?? []).length, 2);
         const latestIds = [...home.matchAll(/href="\/articles\/(latest-\d)\/"/g)].map(
