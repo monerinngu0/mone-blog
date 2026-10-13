@@ -4,7 +4,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test": "node --test scripts/test-article-folders.mjs",
+    "test": "node --test scripts/test-article-folders.mjs scripts/test-url-registry-history.mjs",
+    "registry:check-history": "node scripts/check-url-registry-history.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "dev": "astro dev",

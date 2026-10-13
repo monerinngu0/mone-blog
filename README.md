@@ -224,4 +224,4 @@ npm run dev
 - `gone`: IDは記事に再利用できません。
 - 下書きは登録不要ですが、`redirect` または `gone` のIDを再利用できません。
 
-記事との不整合、未知の状態、余分なフィールド、Redirectチェーンはビルドエラーになります。RegistryからのRedirect生成と、過去のRegistry項目が削除されていないことのCI検証は別途追加します。
+記事との不整合、未知の状態、余分なフィールド、Redirectチェーンはビルドエラーになります。CIは変更前のRegistryとも比較し、過去の項目の削除と、`redirect`・`gone` から `active` への復活を拒否します。RegistryからのRedirect生成は別途追加します。
