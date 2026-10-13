@@ -105,16 +105,20 @@ export async function getSiteContent() {
                 ),
             };
         })
-        .filter(({ data }) => !data.draft)
+        .filter(({ data }) => import.meta.env.DEV || !data.draft)
         .sort((a, b) => a.data.title.localeCompare(b.data.title, 'ja'));
-    const featuredTutorials = tutorials.filter(({ data }) => data.featured);
-    if (featuredTutorials.length > 1) {
+    const publishedFeaturedTutorials = tutorials.filter(({ data }) => !data.draft && data.featured);
+    if (publishedFeaturedTutorials.length > 1) {
         throw new Error('Only one published tutorial can be featured on Home.');
     }
+    const featuredTutorial =
+        publishedFeaturedTutorials[0] ??
+        tutorials.find(({ data }) => data.featured) ??
+        tutorials[0];
     return {
         articles,
         tutorials,
-        featuredTutorial: featuredTutorials[0] ?? tutorials[0],
+        featuredTutorial,
         topics: topics.sort((a, b) => a.data.name.localeCompare(b.data.name, 'ja')),
     };
 }
