@@ -21,9 +21,11 @@ const { tutorial } = Astro.props;
         </a>
         <ol>
             {tutorial.chapters.map((chapter) => (
-                <li>
+                <li class="chapter-row content-row">
                     <h2>
-                        <a href={`/articles/${chapter.id}/`}>{chapter.data.title}</a>
+                        <a class="content-row-link" href={`/articles/${chapter.id}/`}>
+                            {chapter.data.title}
+                        </a>
                     </h2>
                     <p>{chapter.data.description}</p>
                 </li>
@@ -54,8 +56,8 @@ const { tutorial } = Astro.props;
         padding-left: 1.8rem;
         margin-top: 28px;
     }
-    li {
-        padding: 18px 0;
+    .chapter-row {
+        padding-block: 18px;
         border-top: 1px solid var(--line);
     }
     h2 {
