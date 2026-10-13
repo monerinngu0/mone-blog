@@ -28,14 +28,36 @@ export function articleFolders(): Loader {
                 base: './content/articles',
                 pattern: '**/index.mdx',
                 generateId({ entry, base }) {
-                    const id = basename(dirname(entry));
+                    const articleDirectory = dirname(entry);
+                    const id = basename(articleDirectory);
+                    if (id.startsWith('_')) {
+                        throw new Error(
+                            `Grouping folder "${articleDirectory}" cannot contain index.mdx. Remove it or rename the article folder without a leading underscore.`,
+                        );
+                    }
                     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id)) {
                         throw new Error(
                             `Invalid article folder "${entry}". Use a folder name with lowercase letters, digits and hyphens.`,
                         );
                     }
 
-                    const filePath = resolve(fileURLToPath(base), entry);
+                    const articlesRoot = fileURLToPath(base);
+                    const directoryParts = articleDirectory.split(/[\\/]/);
+                    for (let depth = 1; depth < directoryParts.length; depth++) {
+                        const groupingParts = directoryParts.slice(0, depth);
+                        const groupingName = groupingParts.at(-1)!;
+                        const groupingPath = groupingParts.join('/');
+                        const groupingIsArticle = existsSync(
+                            resolve(articlesRoot, ...groupingParts, 'index.mdx'),
+                        );
+                        if (!groupingIsArticle && !groupingName.startsWith('_')) {
+                            throw new Error(
+                                `Grouping folder "${groupingPath}" must start with an underscore, for example "_${groupingName}".`,
+                            );
+                        }
+                    }
+
+                    const filePath = resolve(articlesRoot, entry);
                     const previousPath = pathsById.get(id);
                     // Check before glob's digest cache: identical files must also fail.
                     if (previousPath && previousPath !== filePath && existsSync(previousPath)) {
