@@ -55,8 +55,9 @@ export async function getSiteContent() {
             );
         }
     }
+    // Drafts stay private in production, but are routable while writing with `npm run dev`.
     const articles = resolved
-        .filter(({ data }) => !data.draft)
+        .filter(({ data }) => import.meta.env.DEV || !data.draft)
         .sort(
             (a, b) =>
                 b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf() ||

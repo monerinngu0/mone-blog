@@ -4,6 +4,7 @@ import TopicLinks from '../../components/TopicLinks.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 const { articles, tutorials } = await getSiteContent();
+const isDev = import.meta.env.DEV;
 const tutorialArticleIds = new Set(
     tutorials.flatMap((tutorial) => tutorial.chapters.map((article) => article.id)),
 );
@@ -24,11 +25,19 @@ const standaloneArticleCount = articles.filter(
             <label for="standalone-only">Tutorialに含まれない記事のみ</label>
         </div>
 
+        {isDev && (
+            <div class="article-filter">
+                <input id="published-only" type="checkbox" />
+                <label for="published-only">draftがfalseの記事のみ</label>
+            </div>
+        )}
+
         <div class="article-list">
             {articles.map((article) => (
                 <article
                     class="article-card"
                     data-in-tutorial={tutorialArticleIds.has(article.id) ? 'true' : undefined}
+                    data-draft={article.data.draft ? 'true' : undefined}
                 >
                     <TopicLinks topics={article.topics} />
                     <h2>
@@ -81,6 +90,10 @@ const standaloneArticleCount = articles.filter(
     }
 
     .page:has(#standalone-only:checked) .article-card[data-in-tutorial='true'] {
+        display: none;
+    }
+
+    .page:has(#published-only:checked) .article-card[data-draft='true'] {
         display: none;
     }
 
