@@ -1,0 +1,5 @@
+title: C++おまじないレシピ
+description: C++を書くときの"おまじない"なんかの仕組みなんかを解説します。
+articles:
+    - what-do-compiler
+draft: true
