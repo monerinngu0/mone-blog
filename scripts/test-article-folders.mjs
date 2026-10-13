@@ -47,7 +47,7 @@ test('article IDs survive nesting and moves, and duplicate article folders fail'
                 env: { ...process.env, ASTRO_TELEMETRY_DISABLED: '1' },
             },
         );
-    const expectDuplicate = () => {
+    const expectBuildFailure = (message) => {
         const result = spawnSync(
             process.execPath,
             [join(project, 'node_modules/astro/bin/astro.mjs'), 'build'],
@@ -57,9 +57,10 @@ test('article IDs survive nesting and moves, and duplicate article folders fail'
                 env: { ...process.env, ASTRO_TELEMETRY_DISABLED: '1' },
             },
         );
-        assert.notEqual(result.status, 0, 'Duplicate article folders must fail the build');
-        assert.match(result.stdout + result.stderr, /Duplicate article ID "vector-capacity"/);
+        assert.notEqual(result.status, 0, 'Invalid article folders must fail the build');
+        assert.match(result.stdout + result.stderr, message);
     };
+    const expectDuplicate = () => expectBuildFailure(/Duplicate article ID "vector-capacity"/);
 
     try {
         for (const [source, destination = source] of [
@@ -89,12 +90,12 @@ test('article IDs survive nesting and moves, and duplicate article folders fail'
         await writeRegistry(['vector-introduction', 'vector-capacity']);
         build();
 
-        // Repeated grouping names are legal, even when they match an article ID.
-        const moved = article('group/vector-capacity/group/vector-capacity');
+        // Repeated grouping names are legal when each grouping folder is marked.
+        const moved = article('_group/_vector-capacity/_group/vector-capacity');
         await mkdir(dirname(moved), { recursive: true });
         await rename(article('vector-capacity'), moved);
         // Malformed non-index MDX must never be parsed as an article.
-        await writeFile(article('group/notes.mdx'), '---\ninvalid: [\n---\n');
+        await writeFile(article('_group/notes.mdx'), '---\ninvalid: [\n---\n');
         // An article may itself contain another article folder.
         const child = join(moved, 'nested-article');
         await mkdir(join(child, 'img'), { recursive: true });
@@ -120,7 +121,7 @@ test('article IDs survive nesting and moves, and duplicate article folders fail'
         assert.match(tutorial, /href="\/articles\/vector-capacity\/"/);
 
         // Same ID and byte-identical contents must fail, even with a warm cache.
-        const duplicate = article('other/vector-capacity');
+        const duplicate = article('_other/vector-capacity');
         await mkdir(duplicate, { recursive: true });
         const body = await readFile(join(moved, 'index.mdx'), 'utf8');
         await writeFile(join(duplicate, 'index.mdx'), body);
@@ -129,6 +130,34 @@ test('article IDs survive nesting and moves, and duplicate article folders fail'
         await writeFile(join(duplicate, 'index.mdx'), body.replace('---\n', '---\ndraft: true\n'));
         expectDuplicate();
         await rm(duplicate, { recursive: true });
+
+        // Grouping folders are visibly distinguished from article folders.
+        const unmarkedGroup = article('group/example');
+        await mkdir(unmarkedGroup, { recursive: true });
+        await writeFile(
+            join(unmarkedGroup, 'index.mdx'),
+            '---\ntitle: Example\ndescription: Group check\npublishedAt: 2026-10-06\ndraft: true\n---\nBody\n',
+        );
+        expectBuildFailure(/Grouping folder "group" must start with an underscore/);
+        await rm(article('group'), { recursive: true });
+
+        const groupingArticle = article('_examples');
+        await mkdir(groupingArticle);
+        await writeFile(
+            join(groupingArticle, 'index.mdx'),
+            '---\ntitle: Example\ndescription: Group check\npublishedAt: 2026-10-06\ndraft: true\n---\nBody\n',
+        );
+        expectBuildFailure(/Grouping folder "_examples" cannot contain index\.mdx/);
+        await rm(groupingArticle, { recursive: true });
+
+        const invalidArticle = article('Invalid_ID');
+        await mkdir(invalidArticle);
+        await writeFile(
+            join(invalidArticle, 'index.mdx'),
+            '---\ntitle: Invalid\ndescription: ID check\npublishedAt: 2026-10-06\ndraft: true\n---\nBody\n',
+        );
+        expectBuildFailure(/Invalid article folder/);
+        await rm(invalidArticle, { recursive: true });
 
         // Home limits public articles to five; the archive keeps every article.
         for (let i = 1; i <= 6; i++) {
