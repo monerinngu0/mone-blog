@@ -5,7 +5,6 @@ coverage/
 
 # Generated dependency lockfiles
 package-lock.json
-pnpm-lock.yaml
 
 # Prebuilt/minified assets
 *.min.css
