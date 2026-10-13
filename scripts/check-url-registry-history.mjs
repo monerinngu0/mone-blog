@@ -18,15 +18,13 @@ function articleEntries(registry, owner) {
     return registry.articles;
 }
 
-export function checkUrlRegistryHistory(previousRegistry, currentRegistry, allowedRemovals = []) {
+export function checkUrlRegistryHistory(previousRegistry, currentRegistry) {
     const previous = articleEntries(previousRegistry, 'Previous');
     const current = articleEntries(currentRegistry, 'Current');
-    const allowed = new Set(allowedRemovals);
 
     for (const [id, previousEntry] of Object.entries(previous)) {
         const currentEntry = current[id];
         if (!currentEntry) {
-            if (allowed.has(id)) continue;
             throw new Error(
                 `URL registry entry "${id}" was removed. Keep every published ID in the registry.`,
             );
@@ -65,10 +63,7 @@ if (isMain) {
     }
 
     try {
-        const allowedRemovals = (process.env.ALLOW_UNPUBLISHED_URL_REMOVALS ?? '')
-            .split(',')
-            .filter(Boolean);
-        checkUrlRegistryHistory(registryAt(baseRef), currentRegistry(), allowedRemovals);
+        checkUrlRegistryHistory(registryAt(baseRef), currentRegistry());
         console.log(`URL registry preserves every entry from ${baseRef}.`);
     } catch (error) {
         console.error(error instanceof Error ? error.message : error);
