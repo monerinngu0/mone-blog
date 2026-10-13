@@ -3,7 +3,13 @@ import { getSiteContent } from '../../lib/content';
 import TopicLinks from '../../components/TopicLinks.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const { articles } = await getSiteContent();
+const { articles, tutorials } = await getSiteContent();
+const tutorialArticleIds = new Set(
+    tutorials.flatMap((tutorial) => tutorial.chapters.map((article) => article.id)),
+);
+const standaloneArticleCount = articles.filter(
+    (article) => !tutorialArticleIds.has(article.id),
+).length;
 ---
 
 <BaseLayout title="Articles" description="すべての記事">
@@ -13,9 +19,17 @@ const { articles } = await getSiteContent();
             <p>キジ(鳥)です</p>
         </header>
 
+        <div class="article-filter">
+            <input id="standalone-only" type="checkbox" />
+            <label for="standalone-only">Tutorialに含まれない記事のみ</label>
+        </div>
+
         <div class="article-list">
             {articles.map((article) => (
-                <article class="article-card">
+                <article
+                    class="article-card"
+                    data-in-tutorial={tutorialArticleIds.has(article.id) ? 'true' : undefined}
+                >
                     <TopicLinks topics={article.topics} />
                     <h2>
                         <a href={`/articles/${article.id}/`}>{article.data.title}</a>
@@ -27,6 +41,9 @@ const { articles } = await getSiteContent();
                 </article>
             ))}
         </div>
+        {standaloneArticleCount === 0 && (
+            <p class="standalone-empty">Tutorialに含まれない記事はありません。</p>
+        )}
     </section>
 </BaseLayout>
 
@@ -38,6 +55,42 @@ const { articles } = await getSiteContent();
 
     header {
         margin-bottom: 28px;
+    }
+
+    .article-filter {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        width: fit-content;
+        margin-bottom: 12px;
+        color: var(--muted);
+        font-size: 0.9rem;
+    }
+
+    .article-filter input {
+        width: 1rem;
+        height: 1rem;
+        margin: 0;
+        accent-color: var(--accent);
+        cursor: pointer;
+    }
+
+    .article-filter label {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .page:has(#standalone-only:checked) .article-card[data-in-tutorial='true'] {
+        display: none;
+    }
+
+    .standalone-empty {
+        display: none;
+        color: var(--muted);
+    }
+
+    .page:has(#standalone-only:checked) .standalone-empty {
+        display: block;
     }
 
     h1 {
