@@ -62,23 +62,28 @@ test('article IDs survive nesting and moves, and duplicate article folders fail'
     };
 
     try {
-        for (const path of [
-            'src',
-            // Keep the fixture's article set fixed as new blog posts are added.
-            'content/articles/vector-introduction',
-            'content/articles/vector-capacity',
-            'content/topics/cpp.yaml',
-            'content/topics/stl.yaml',
-            'content/topics/memory.yaml',
-            'content/tutorials/vector.yaml',
-            'content/pages/about',
-            'content/linked.json',
-            'astro.config.mjs',
-            'tsconfig.json',
-            'package.json',
+        for (const [source, destination = source] of [
+            ['src'],
+            [
+                'scripts/fixtures/content/articles/vector-introduction',
+                'content/articles/vector-introduction',
+            ],
+            [
+                'scripts/fixtures/content/articles/vector-capacity',
+                'content/articles/vector-capacity',
+            ],
+            ['content/topics/cpp.yaml'],
+            ['content/topics/stl.yaml'],
+            ['content/topics/memory.yaml'],
+            ['scripts/fixtures/content/tutorials/vector.yaml', 'content/tutorials/vector.yaml'],
+            ['content/pages/about'],
+            ['content/linked.json'],
+            ['astro.config.mjs'],
+            ['tsconfig.json'],
+            ['package.json'],
         ]) {
-            await mkdir(dirname(at(path)), { recursive: true });
-            await cp(join(project, path), at(path), { recursive: true });
+            await mkdir(dirname(at(destination)), { recursive: true });
+            await cp(join(project, source), at(destination), { recursive: true });
         }
         await symlink(join(project, 'node_modules'), at('node_modules'), 'dir');
         await writeRegistry(['vector-introduction', 'vector-capacity']);
