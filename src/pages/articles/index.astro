@@ -35,13 +35,15 @@ const standaloneArticleCount = articles.filter(
         <div class="article-list">
             {articles.map((article) => (
                 <article
-                    class="article-card"
+                    class="article-card content-row"
                     data-in-tutorial={tutorialArticleIds.has(article.id) ? 'true' : undefined}
                     data-draft={article.data.draft ? 'true' : undefined}
                 >
                     <TopicLinks topics={article.topics} />
                     <h2>
-                        <a href={`/articles/${article.id}/`}>{article.data.title}</a>
+                        <a class="content-row-link" href={`/articles/${article.id}/`}>
+                            {article.data.title}
+                        </a>
                     </h2>
                     <p>{article.data.description}</p>
                     <time datetime={article.data.publishedAt.toISOString()}>
@@ -119,7 +121,7 @@ const standaloneArticleCount = articles.filter(
 
     .article-card {
         display: block;
-        padding: 20px 0;
+        padding-block: 20px;
         border-top: 1px solid var(--line);
         text-decoration: none;
     }
