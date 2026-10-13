@@ -184,7 +184,7 @@ description: C++の言語仕様や機能を、仕組みから理解する記事�
 ```yaml
 topics:
     - cpp
-    - stl
+    - web
 ```
 
 - `/topics/`: Topicの説明と公開記事数
