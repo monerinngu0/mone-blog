@@ -203,3 +203,25 @@ npm run dev
 ```
 
 記事フォルダの読み込み・重複検出・移動後の参照は `npm test` で検証できます（元の記事を変更せず、一時ディレクトリでビルドします）。
+
+## 公開記事URLの管理
+
+`content/url-registry.json` は、一度公開したArticle IDとURLの履歴台帳です。公開記事を追加するときは、同じIDを `active` として登録します。
+
+```json
+{
+    "version": 1,
+    "articles": {
+        "current-article": { "status": "active" },
+        "old-article": { "status": "redirect", "to": "current-article" },
+        "removed-article": { "status": "gone" }
+    }
+}
+```
+
+- `active`: 同じIDの公開記事が必要です。
+- `redirect`: IDは記事に再利用できず、転送先は直接 `active` な記事を指定します。
+- `gone`: IDは記事に再利用できません。
+- 下書きは登録不要ですが、`redirect` または `gone` のIDを再利用できません。
+
+記事との不整合、未知の状態、余分なフィールド、Redirectチェーンはビルドエラーになります。RegistryからのRedirect生成と、過去のRegistry項目が削除されていないことのCI検証は別途追加します。
