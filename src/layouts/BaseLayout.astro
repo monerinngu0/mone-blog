@@ -34,9 +34,7 @@ const path = `${Astro.url.pathname.replace(/\/$/, '')}/`;
     <body>
         <header class="site-header">
             <div class="header-inner">
-                <a class="brand" href="/">
-                    モネのブログ
-                </a>
+                <a class="brand" href="/">モネのブログ</a>
                 <nav aria-label="メインナビゲーション">
                     {navigation.map(({ href, label }) => (
                         <a href={href} aria-current={path === href ? 'page' : undefined}>
