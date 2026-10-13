@@ -1,4 +1,6 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+import urlRegistry from '../../content/url-registry.json';
+import { validateArticleUrls } from './url-registry';
 
 export type Prerequisite = { text: string; href?: string };
 
@@ -11,6 +13,7 @@ export async function getSiteContent() {
     ]);
     const topicsById = new Map(topics.map((topic) => [topic.id, topic]));
     const rawArticlesById = new Map(allArticles.map((article) => [article.id, article]));
+    validateArticleUrls(urlRegistry, allArticles);
     function resolvePrerequisites(
         items: CollectionEntry<'articles'>['data']['prerequisites'],
         owner: string,

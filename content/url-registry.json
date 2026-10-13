@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "articles": {
+    "introduction": {
+      "status": "active"
+    },
+    "vector-capacity": {
+      "status": "active"
+    },
+    "vector-introduction": {
+      "status": "active"
+    }
+  }
+}

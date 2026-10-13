@@ -22,6 +22,20 @@ test('article IDs survive nesting and moves, and duplicate article folders fail'
     const fixture = await mkdtemp(join(tmpdir(), 'mone-article-folders-'));
     const at = (...parts) => join(fixture, ...parts);
     const article = (...parts) => at('content/articles', ...parts);
+    const writeRegistry = (activeIds) =>
+        writeFile(
+            at('content/url-registry.json'),
+            `${JSON.stringify(
+                {
+                    version: 1,
+                    articles: Object.fromEntries(
+                        activeIds.sort().map((id) => [id, { status: 'active' }]),
+                    ),
+                },
+                null,
+                2,
+            )}\n`,
+        );
     const build = () =>
         execFileSync(
             process.execPath,
@@ -67,6 +81,7 @@ test('article IDs survive nesting and moves, and duplicate article folders fail'
             await cp(join(project, path), at(path), { recursive: true });
         }
         await symlink(join(project, 'node_modules'), at('node_modules'), 'dir');
+        await writeRegistry(['vector-introduction', 'vector-capacity']);
         build();
 
         // Repeated grouping names are legal, even when they match an article ID.
@@ -82,6 +97,7 @@ test('article IDs survive nesting and moves, and duplicate article folders fail'
             join(child, 'index.mdx'),
             '---\ntitle: Nested\ndescription: Nested article\npublishedAt: 2026-10-06\n---\nNested body\n',
         );
+        await writeRegistry(['vector-introduction', 'vector-capacity', 'nested-article']);
         // Reuse the content cache to catch stale filePath values after a move.
         build();
         assert.deepEqual((await readdir(at('dist/articles'))).sort(), [
@@ -123,6 +139,12 @@ test('article IDs survive nesting and moves, and duplicate article folders fail'
             article('hidden-draft/index.mdx'),
             '---\ntitle: Hidden\ndescription: Draft\npublishedAt: 2028-01-01\ndraft: true\n---\nDraft\n',
         );
+        await writeRegistry([
+            'vector-introduction',
+            'vector-capacity',
+            'nested-article',
+            ...Array.from({ length: 6 }, (_, index) => `latest-${index + 1}`),
+        ]);
         build();
         const home = await readFile(at('dist/index.html'), 'utf8');
         const archive = await readFile(at('dist/articles/index.html'), 'utf8');
