@@ -3,12 +3,6 @@
   "articles": {
     "introduction": {
       "status": "active"
-    },
-    "vector-capacity": {
-      "status": "gone"
-    },
-    "vector-introduction": {
-      "status": "gone"
     }
   }
 }

@@ -30,6 +30,13 @@ test('URL registry history rejects deleting a published ID', () => {
     );
 });
 
+test('URL registry history can explicitly forget an unpublished ID', () => {
+    const previous = registry({ demo: { status: 'gone' } });
+    const current = registry({});
+
+    assert.doesNotThrow(() => checkUrlRegistryHistory(previous, current, ['demo']));
+});
+
 test('URL registry history rejects reactivating a reserved ID', () => {
     for (const status of ['redirect', 'gone']) {
         const previous = registry({ old: { status } });

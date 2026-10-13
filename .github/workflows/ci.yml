@@ -43,6 +43,7 @@ jobs:
       - name: Check URL registry history
         env:
           BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          ALLOW_UNPUBLISHED_URL_REMOVALS: vector-capacity,vector-introduction
         run: npm run registry:check-history -- "$BASE_SHA"
 
       - name: Build site
