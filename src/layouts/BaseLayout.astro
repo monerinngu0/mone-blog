@@ -7,11 +7,11 @@ interface Props {
 }
 
 const {
-    title = 'mone',
-    description = 'C++やコンピュータ科学を、仕組みから深く理解するための技術サイト。',
+    title = 'モネのブログ',
+    description = 'モネさんが面白い話をするブログ。',
 } = Astro.props;
 
-const pageTitle = title === 'mone' ? title : `${title} | mone`;
+const pageTitle = title === 'モネのブログ' ? title : `${title} | モネのブログ`;
 const navigation = [
     { href: '/', label: 'Home' },
     { href: '/articles/', label: 'Articles' },
@@ -35,7 +35,7 @@ const path = `${Astro.url.pathname.replace(/\/$/, '')}/`;
         <header class="site-header">
             <div class="header-inner">
                 <a class="brand" href="/">
-                    mone
+                    モネのブログ
                 </a>
                 <nav aria-label="メインナビゲーション">
                     {navigation.map(({ href, label }) => (
