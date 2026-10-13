@@ -32,10 +32,12 @@ const { topic, articles } = Astro.props;
         {articles.length === 0 && <p>このTopicの公開記事はまだありません。</p>}
         <div class="article-list">
             {articles.map((article) => (
-                <article class="article-card">
+                <article class="article-card content-row">
                     <TopicLinks topics={article.topics} />
                     <h2>
-                        <a href={`/articles/${article.id}/`}>{article.data.title}</a>
+                        <a class="content-row-link" href={`/articles/${article.id}/`}>
+                            {article.data.title}
+                        </a>
                     </h2>
                     <p>{article.data.description}</p>
                     <time datetime={article.data.publishedAt.toISOString()}>
@@ -77,7 +79,7 @@ const { topic, articles } = Astro.props;
 
     .article-card {
         display: block;
-        padding: 20px 0;
+        padding-block: 20px;
         border-top: 1px solid var(--line);
         text-decoration: none;
     }
