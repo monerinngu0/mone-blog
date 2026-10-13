@@ -50,11 +50,20 @@ test('article IDs survive nesting and moves, and duplicate article folders fail'
     try {
         for (const path of [
             'src',
-            'content',
+            // Keep the fixture's article set fixed as new blog posts are added.
+            'content/articles/vector-introduction',
+            'content/articles/vector-capacity',
+            'content/topics/cpp.yaml',
+            'content/topics/stl.yaml',
+            'content/topics/memory.yaml',
+            'content/tutorials/vector.yaml',
+            'content/pages/about',
+            'content/linked.json',
             'astro.config.mjs',
             'tsconfig.json',
             'package.json',
         ]) {
+            await mkdir(dirname(at(path)), { recursive: true });
             await cp(join(project, path), at(path), { recursive: true });
         }
         await symlink(join(project, 'node_modules'), at('node_modules'), 'dir');
