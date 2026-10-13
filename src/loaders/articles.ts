@@ -8,6 +8,20 @@ export function articleFolders(): Loader {
     return {
         name: 'article-folders',
         async load(context) {
+            const projectRoot = fileURLToPath(context.config.root);
+            const pruneMissingArticles = () => {
+                for (const [id, article] of context.store.entries()) {
+                    if (article.filePath && !existsSync(resolve(projectRoot, article.filePath))) {
+                        context.store.delete(id);
+                    }
+                }
+            };
+
+            // Git can remove a whole article directory while the dev server is running.
+            // Clear its cached entry even when the watcher misses the index.mdx unlink event.
+            pruneMissingArticles();
+            context.watcher?.on('unlinkDir', pruneMissingArticles);
+
             // Reset on each sync, while retaining the map for glob's dev watcher.
             const pathsById = new Map<string, string>();
             const loader = glob({
@@ -34,9 +48,7 @@ export function articleFolders(): Loader {
                     // A move can preserve both ID and contents. Invalidate the old path so
                     // Astro renders the new file and resolves its colocated assets there.
                     const stored = context.store.get(id);
-                    const projectPath = relative(fileURLToPath(context.config.root), filePath)
-                        .split('\\')
-                        .join('/');
+                    const projectPath = relative(projectRoot, filePath).split('\\').join('/');
                     if (stored?.filePath && stored.filePath !== projectPath) {
                         context.store.delete(id);
                     }
