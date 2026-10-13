@@ -196,6 +196,41 @@ const path = `${Astro.url.pathname.replace(/\/$/, '')}/`;
         text-decoration-thickness: 2px;
     }
 
+    .content-row {
+        position: relative;
+        margin-inline: -12px;
+        padding-inline: 12px;
+        cursor: pointer;
+        transition: background 150ms ease;
+    }
+
+    .content-row::before {
+        content: '';
+        position: absolute;
+        inset: 12px auto 12px 0;
+        width: 3px;
+        border-radius: 999px;
+        background: var(--accent);
+        opacity: 0;
+        transition: opacity 150ms ease;
+    }
+
+    .content-row:hover,
+    .content-row:focus-within {
+        background: color-mix(in srgb, var(--accent-soft) 35%, transparent);
+    }
+
+    .content-row:hover::before,
+    .content-row:focus-within::before {
+        opacity: 1;
+    }
+
+    .content-row-link::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+    }
+
     footer {
         margin-top: 48px;
         padding: 20px 0;
