@@ -30,11 +30,13 @@ for (const article of allArticles) {
         <div class="article-list">
             {articles.length === 0 && <p>記事はまだありません。</p>}
             {articles.map((article) => (
-                <article class="article-card">
+                <article class="article-card content-row">
                     <div>
                         <TopicLinks topics={article.topics} />
                         <h3>
-                            <a href={`/articles/${article.id}/`}>{article.data.title}</a>
+                            <a class="content-row-link" href={`/articles/${article.id}/`}>
+                                {article.data.title}
+                            </a>
                         </h3>
                         <p>{article.data.description}</p>
                     </div>
@@ -154,36 +156,12 @@ for (const article of allArticles) {
     }
 
     .article-card {
-        position: relative;
         display: flex;
         justify-content: space-between;
         gap: 24px;
-        margin-inline: -12px;
-        padding: 20px 12px;
+        padding-block: 20px;
         border-bottom: 1px solid var(--line);
         text-decoration: none;
-        transition: background 150ms ease;
-    }
-
-    .article-card::before {
-        content: '';
-        position: absolute;
-        inset: 12px auto 12px 0;
-        width: 3px;
-        border-radius: 999px;
-        background: var(--accent);
-        opacity: 0;
-        transition: opacity 150ms ease;
-    }
-
-    .article-card:hover,
-    .article-card:has(h3 a:focus-visible) {
-        background: color-mix(in srgb, var(--accent-soft) 35%, transparent);
-    }
-
-    .article-card:hover::before,
-    .article-card:has(h3 a:focus-visible)::before {
-        opacity: 1;
     }
 
     .article-card h3 {
